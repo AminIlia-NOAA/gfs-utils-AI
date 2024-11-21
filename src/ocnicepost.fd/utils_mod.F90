@@ -578,6 +578,206 @@ contains
 
   end subroutine dumpnc1d
 
+
+  subroutine write_grib2_2d(fname, vars, dims, nflds, field)
+
+   ! This subroutine will work if we have a template with all variables included
+   
+       implicit none
+   
+       character(len=*), intent(in) :: fname, fsrc   ! Output GRIB2 file name and source nc file
+       character(len=*), intent(in) :: vname   ! Variable name (metadata for identification)
+       integer,          intent(in) :: dims(2) ! Dimensions of the field (nx, ny)
+       integer,          intent(in) :: nflds
+       real,             intent(in) :: field(dims(1)*dims(2),nflds) ! 2D data array
+   
+       ! GRIB2 specific variables
+       integer :: lunout  ! Logical unit number for the GRIB2 file
+       integer :: ierr    ! Error handling status
+       integer :: npt     ! Total number of grid points
+       integer :: fortime
+   
+   !    real, allocatable :: field_1d(:) ! Flattened field data for GRIB2 compatibility
+       integer(4) :: max_bytes, lengrib
+       integer :: count, iseek             !  iseek no of bytes to skip 
+       integer, parameter :: msk1=32000     !max no. od bytes to search
+   
+       
+       ! GRIB2 metadata arrays
+       integer :: listsec0(2), listsec1(13)
+       integer :: igdtnum, ipdtnum, idrtnum
+       integer :: igdtlen, ipdtlen, idrtlen
+       integer, allocatable :: jgdt(:), jpdt(:), idrtmpl(:)
+       integer(4) :: igds(5)
+       integer :: numcoord, ibmap, currlen
+       real(4) :: coordlist
+   
+       ! Character buffer for GRIB2 message
+       character(1), allocatable :: cgrib(:)
+   
+   
+       npt = dims(1) * dims(2)
+   !    allocate(field_1d(npt))
+   !    field_1d = reshape(field, (/npt/))  ! Flatten 2D field to 1D for GRIB2 format
+   
+       ! Allocate character buffer for GRIB2 message
+       max_bytes = npt * 4  ! Estimated max bytes
+   !    allocate(cgrib(max_bytes))
+   
+
+       icount=0
+       iseek=0
+    
+       ! Use getlun90 to get a logical unit and baopenw to open the file
+       call getlun90(lunout, 1)
+       call baopenw(lunout, trim(fname), ierr)
+       if (ierr /= 0) then
+           print *, 'Error opening template file ', trim(fname)
+           return
+       end if
+
+       call skgb(lunout,iseek,msk1,lskip,lgrib)    ! lgrib is the number of bytes in message and lskip is the no of  
+       if (lgrib==0) exit    ! end loop at EOF or problem
+       if (lgrib>currlen) then
+          if (allocated(cgrib)) deallocate(cgrib)
+          allocate(cgrib(lgrib),stat=ierr)
+          currlen=lgrib
+       endif
+   
+       call baread(ifl1,lskip,lgrib,lengrib,cgrib)
+       if (lgrib/=lengrib) then
+          print *,' degrib2: IO Error.'
+          call errexit(9)
+       endif
+   
+       iseek=lskip+lgrib
+       icount=icount+1
+       PRINT *
+       PRINT *,'GRIB MESSAGE ',icount,' starts at',lskip+1
+       PRINT *
+
+    
+       call gb_info(cgrib,lengrib,listsec0,listsec1,&
+       nflds,numlocal,maxlocal,ierr)
+      if (ierr/=0) then
+         write(6,*) ' ERROR querying GRIB2 message = ',ierr
+         stop 10
+      endif
+
+      print *,' SECTION 0: ',(listsec0(j),j=1,3)
+      print *,' SECTION 1: ',(listsec1(j),j=1,13)
+
+
+      call retrieve_time(fsrc, time_str, fortime, ref_time_array)
+
+
+
+
+      
+    
+      ! Initialize GRIB2 message sections
+       listsec0(1) = 10     ! Discipline - GRIB Master Table Number (Code Table 0.0)
+       listsec0(2) = 2     ! GRIB Edition Number (currently 2)
+   
+       listsec1(1) = 7     ! Originating Centre (Common Code Table C-1)
+       listsec1(2) = 4     ! Originating Sub-centre (local table)
+       listsec1(4) = 1     ! GRIB Local Tables Version Number (Code Table 1.1)
+       listsec1(5) = 1     ! Significance of Reference Time (Code Table 1.2)
+       listsec1(6) = ref_time(1)     ! Reference Time - Year -4digits
+       listsec1(7) = ref_time(2)     ! Reference Time - Month
+       listsec1(8) = ref_time(3)     ! Reference Time - Day
+       listsec1(9) = ref_time(4)     ! Reference Time - Hour
+       listsec1(10) = ref_time(5)    ! Reference Time - Minute
+       listsec1(11) = ref_time(6)    ! Reference Time - Second
+       listsec1(12) = 0    ! Production status of data (Code Table 1.3)
+       listsec1(13) = 1    ! Type of processed data (Code Table 1.4)
+
+
+
+
+
+
+       do n=1,nflds
+
+
+
+        ! Initialize GRIB2 message
+         call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr)
+         if (ierr /= 0) then
+            print *, 'GRIB2 message', ierr
+            return
+         end if
+ 
+         call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr)
+         if (ierr /= 0) then
+             print *, 'GRIB2 message', ierr
+             return
+         end if
+
+
+
+
+
+
+
+  end subroutine write_grib2_2d
+
+
+
+
+
+
+
+  subroutine retrieve_time(fsrc, time_str, forecast_hour, ref_time_array)
+   use netcdf
+   implicit none
+
+   character(len=*), intent(in) :: fsrc                  ! tripolar NetCDF file name
+
+   character(len=10), intent(out) :: time_str            ! Date in YYYYMMDDHH format
+   integer, intent(out) :: forecast_hour                 ! Forecast hour as an integer
+   integer, dimension(6), intent(out) :: ref_time_array  ! Array for GRIB2 reference time: [year, month, day, hour, minute, second]
+
+   integer :: ncid, time_varid, T1_varid, T2_varid, ierr
+   character(len=30) :: units_str                        ! Units attribute string for time
+   double precision :: T1, T2                            ! Scalars to hold start and end time data
+
+   integer :: ref_year, ref_month, ref_day, ref_hour, ref_min, ref_sec
+   integer :: year, month, day, hour
+   double precision :: hours_offset
+ 
+   call nf90_err(nf90_open(trim(ncfile), nf90_nowrite, ncid), 'opening '//fsrc)
+   call nf90_err(nf90_inq_varid(ncid, 'time', time_varid), 'get variable ID: time')
+   call nf90_err(nf90_get_var(ncid, time_varid, forecast_hour), 'get variable time')
+   call nf90_err(nf90_get_att(ncid, time_varid, 'units', units_str), 'get attribute: units')
+
+   ! Assuming format "hours since YYYY-MM-DD HH:MM:SS"
+   read(units_str(13:30), '(I4,1X,I2,1X,I2,1X,I2,1X,I2,1X,I2)') &
+       ref_year, ref_month, ref_day, ref_hour, ref_min, ref_sec
+
+   ! Set up ref_time_array for GRIB2 Section 1
+   ref_time_array(1) = ref_year
+   ref_time_array(2) = ref_month
+   ref_time_array(3) = ref_day
+   ref_time_array(4) = ref_hour
+   ref_time_array(5) = ref_min
+   ref_time_array(6) = ref_sec
+
+   call nf90_err(nf90_inq_varid(ncid, 'average_T1', T1_varid), 'get variable ID: average_T1'))
+   call nf90_err(nf90_get_var(ncid, T1_varid, T1), 'get variable: average_T1')
+   call nf90_err(nf90_inq_varid(ncid, 'average_T2', T2_varid), 'get variable ID: average_T2'))
+   call nf90_err(nf90_get_var(ncid, T2_varid, T2), 'get variable: average_T2')
+   call nf90_err(nf90_close(ncid), 'close: '//fsrc)
+
+!   forecast_string = int(T2 - T1)
+!   Format the datetime in YYYYMMDDHH format
+   write(time_str, '(I4.4,I2.2,I2.2,I2.2)') ref_year, ref_month, ref_day, ref_hour
+
+
+  end subroutine retrieve_time
+
+
+
   !----------------------------------------------------------
   ! handle netcdf errors
   !----------------------------------------------------------
