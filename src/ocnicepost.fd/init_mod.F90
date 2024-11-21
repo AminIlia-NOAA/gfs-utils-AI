@@ -7,15 +7,27 @@ module init_mod
   real, parameter :: maxvars = 50              !< The maximum number of fields expected in a source file
 
   type :: vardefs
-     character(len= 20)   :: var_name          !< A variable's variable name
-     character(len=120)   :: long_name         !< A variable's long name
-     character(len= 20)   :: units             !< A variable's unit
-     character(len= 20)   :: var_remapmethod   !< A variable's mapping method
-     integer              :: var_dimen         !< A variable's dimensionality
-     character(len=  4)   :: var_grid          !< A variable's input grid location; all output locations are on cell centers
-     character(len= 20)   :: var_pair          !< A variable's pair
-     character(len=  4)   :: var_pair_grid     !< A pair variable grid
-     real                 :: var_fillvalue     !< A variable's fillvalue
+  character(len= 20)   :: var_name          !< A variable's variable name
+  !     character(len=120)   :: long_name         !< A variable's long name
+  !     character(len= 20)   :: units             !< A variable's unit
+       character(len= 20)   :: var_remapmethod   !< A variable's mapping method
+       integer              :: var_dimen         !< A variable's dimensionality
+       character(len=  4)   :: var_grid          !< A variable's input grid location; all output locations are on cell centers
+       character(len= 20)   :: var_pair          !< A variable's pair
+       character(len=  4)   :: var_pair_grid     !< A pair variable grid
+       real                 :: var_fillvalue     !< A variable's fillvalue
+       character(len= 20)   :: var_name_gb2      !< A variable's grib2 variable name
+       character(len=120)   :: long_name         !< A variable's discription
+       character(len= 20)   :: units             !< A variable's unit
+  !!!may need to add a fillvalue for grib2 file
+       integer              ::var_g1             !< Variables' grib2 coefficients g1-g8
+       integer              ::var_g2
+       integer              ::var_g3
+       integer              ::var_g4
+       integer              ::var_g5
+       integer              ::var_g6
+       integer              ::var_g7
+       integer              ::var_g8
   end type vardefs
 
   type(vardefs) :: outvars(maxvars)            !< An empty structure filled by reading a csv file describing the fields
@@ -120,8 +132,8 @@ contains
 
     character(len= 40) :: fname
     character(len=100) :: chead
-    character(len= 20) :: c1,c3,c4,c5,c6
-    integer :: i2
+    character(len= 20) :: c1,c3,c4,c5,c6,c7,c8,c9
+    integer :: i2,i10,i11,i12,i13,i14,i15,i16,i17
     integer :: nn,n,ierr,iounit
 
     ! --------------------------------------------------------
@@ -138,7 +150,7 @@ contains
     read(iounit,*)chead
     nn=0
     do n = 1,maxvars
-       read(iounit,*,iostat=ierr)c1,i2,c3,c4,c5,c6
+       read(iounit,*,iostat=ierr)c1,i2,c3,c4,c5,c6,c7,c8,c9,i10,i11,i12,i13,i14,i15,i16,i17
        if (ierr .ne. 0) exit
        if (len_trim(c1) > 0) then
           nn = nn+1
@@ -148,6 +160,17 @@ contains
           outvars(nn)%var_remapmethod = trim(c4)
           outvars(nn)%var_pair = trim(c5)
           outvars(nn)%var_pair_grid = trim(c6)
+          outvars(nn)%var_name_gb2 = trim(c7)
+          outvars(nn)%var_discription = trim(c8)
+          outvars(nn)%var_unit = trim(c9)
+          outvars(nn)%var_g1 = trim(i10)
+          outvars(nn)%var_g2 = trim(i11)
+          outvars(nn)%var_g3 = trim(i12)
+          outvars(nn)%var_g4 = trim(i13)
+          outvars(nn)%var_g5 = trim(i14)
+          outvars(nn)%var_g6 = trim(i15)
+          outvars(nn)%var_g7 = trim(i16)
+          outvars(nn)%var_g8 = trim(i17)
        end if
     end do
     close(iounit)
