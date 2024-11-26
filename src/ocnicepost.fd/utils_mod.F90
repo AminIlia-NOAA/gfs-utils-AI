@@ -1,7 +1,9 @@
 module utils_mod
 
   use netcdf
-  use init_mod, only : debug, logunit, vardefs, fsrc
+  use init_mod, only : debug, logunit, vardefs, fsrc, input_file
+  use grib_mod
+
 
   implicit none
 
@@ -579,30 +581,47 @@ contains
   end subroutine dumpnc1d
 
 
-  subroutine write_grib2_2d(fname, vars, dims, nflds, field)
+
+  !-----------------------------------------------------------------------------------
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Write Grib2 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!!!!!!!!!!!!!!!!!This subroutine write Grib2 file modified messages!!!!!!!!!!!!!!!!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !-----------------------------------------------------------------------------------
+
+  subroutine write_grib2_2d(fname, g2d, dims, nflds, field)
 
    ! This subroutine will work if we have a template with all variables included
    
        implicit none
    
-       character(len=*), intent(in) :: fname, fsrc   ! Output GRIB2 file name and source nc file
-       character(len=*), intent(in) :: vname   ! Variable name (metadata for identification)
+       character(len=*), intent(in) :: fname   ! Output GRIB2 file name and source nc file
+       type(vardefs),    intent(in)  :: g2d
        integer,          intent(in) :: dims(2) ! Dimensions of the field (nx, ny)
        integer,          intent(in) :: nflds
        real,             intent(in) :: field(dims(1)*dims(2),nflds) ! 2D data array
-   
+
+       integer, dimension(6), intent(out) :: ref_time  ! Array for GRIB2 reference time: [year, month, day, hour, minute, second]
+
        ! GRIB2 specific variables
+       type(gribfield) :: gfld
        integer :: lunout  ! Logical unit number for the GRIB2 file
        integer :: ierr    ! Error handling status
        integer :: npt     ! Total number of grid points
        integer :: fortime
+       integer :: dij     
    
-   !    real, allocatable :: field_1d(:) ! Flattened field data for GRIB2 compatibility
        integer(4) :: max_bytes, lengrib
        integer :: count, iseek             !  iseek no of bytes to skip 
        integer, parameter :: msk1=32000     !max no. od bytes to search
    
-       
+       type(gribfield) :: gfld
+       integer :: lunout,iseek,icount,lskip,lgrib,lengrib,ierr
+       integer :: nflds,numlocal,maxlocal
+       CHARACTER(len=1),allocatable,dimension(:) :: cgrib
+       integer, parameter :: msk1=32000
+       logical :: unpack,expand
+
+
        ! GRIB2 metadata arrays
        integer :: listsec0(2), listsec1(13)
        integer :: igdtnum, ipdtnum, idrtnum
@@ -644,7 +663,7 @@ contains
           currlen=lgrib
        endif
    
-       call baread(ifl1,lskip,lgrib,lengrib,cgrib)
+       call baread(lunout,lskip,lgrib,lengrib,cgrib)
        if (lgrib/=lengrib) then
           print *,' degrib2: IO Error.'
           call errexit(9)
@@ -659,29 +678,36 @@ contains
     
        call gb_info(cgrib,lengrib,listsec0,listsec1,&
        nflds,numlocal,maxlocal,ierr)
-      if (ierr/=0) then
+       if (ierr/=0) then
          write(6,*) ' ERROR querying GRIB2 message = ',ierr
-         stop 10
-      endif
+        stop 10
+       endif
 
-      print *,' SECTION 0: ',(listsec0(j),j=1,3)
-      print *,' SECTION 1: ',(listsec1(j),j=1,13)
-
-
-      call retrieve_time(fsrc, time_str, fortime, ref_time_array)
+       print *,' SECTION 0: ',(listsec0(j),j=1,3)
+       print *,' SECTION 1: ',(listsec1(j),j=1,13)
 
 
+       unpack=.false.
+       expand=0
+       ! get template info
+       call gf_getfld(cgrib,lengrib,0,unpack,expand,gfld,ierr)
+       if (ierr/=0) then
+           write(6,*) ' ERROR extracting field = ',ierr
+           cycle
+       endif
 
 
-      
-    
-      ! Initialize GRIB2 message sections
-       listsec0(1) = 10     ! Discipline - GRIB Master Table Number (Code Table 0.0)
+       call retrieve_time(time_str, fortime, ref_time)
+
+
+       ! Initialize GRIB2 message sections
+       listsec0(1) = g2d(10,1)     ! Discipline - GRIB Master Table Number (Code Table 0.0)
        listsec0(2) = 2     ! GRIB Edition Number (currently 2)
    
        listsec1(1) = 7     ! Originating Centre (Common Code Table C-1)
-       listsec1(2) = 4     ! Originating Sub-centre (local table)
-       listsec1(4) = 1     ! GRIB Local Tables Version Number (Code Table 1.1)
+       listsec1(2) = 4     ! Originating Sub-centre (local table) EMC=4
+!       listsec1(3) = 32    ! GRIB Master Tables Version Number (Code Table 1.0)
+       listsec1(4) = 0     ! GRIB Local Tables Version Number (Code Table 1.1)
        listsec1(5) = 1     ! Significance of Reference Time (Code Table 1.2)
        listsec1(6) = ref_time(1)     ! Reference Time - Year -4digits
        listsec1(7) = ref_time(2)     ! Reference Time - Month
@@ -693,13 +719,51 @@ contains
        listsec1(13) = 1    ! Type of processed data (Code Table 1.4)
 
 
+       ! set grid res
+       if (nxt == 1440 .and. nyt == 1080) dij= = 250000    ! 1/4deg tripole
+       if (nxt == 720  .and. nyt == 576) dij= = 500000     ! 1/2deg tripole
+       if (nxt == 360  .and. nyt == 320) dij= = 1000000     ! 1deg tripole
+       if (nxt == 72   .and. nyt == 35) dij= = 5000000      ! 5deg tripole
 
 
+       lon0=0
+       lon1=360000000-dij
+       lat0=-90000000
+       lat1=90000000
+
+       ! Populate the jgdt array for Template 3.0
+       jgdt(1) = dims(2)                      ! Number of latitude points
+       jgdt(2) = dims(1)                      ! Number of longitude points
+       jgdt(3) = lat0                 ! Latitude of first grid point (microdegrees)
+       jgdt(4) = lon0                 ! Longitude of first grid point (microdegrees)
+       jgdt(5) = 0                         ! Resolution and component flags
+       jgdt(6) = lat1                  ! Latitude of last grid point (microdegrees)
+       jgdt(7) = lon1                  ! Longitude of last grid point (microdegrees)
+       jgdt(8) = dij                        ! Grid increment in longitude direction (microdegrees)
+       jgdt(9) = dij                        ! Grid increment in latitude direction (microdegrees)
+       jgdt(10) = 0                        ! Scanning mode (0 for default)
+!       ! Remaining values are reserved or unused for Template 3.0
+       jgdt(11:19) = 0
+
+
+       igdtnum=0
+       ! Define igds GRIB2 - SECTION 3
+       igds(1) = 0          ! Source of grid definition 
+       igds(2) = npt        ! Number of grid points
+       igds(3) = 0          ! Number of octets for each additional grid points definition
+       igds(4) = 0          ! Interpretation of list for optional points definition
+       igds(5) = igdtnum    ! GRIB2 - CODE TABLE 3.1
+
+
+       igdtlen=size(jgdt)
+
+       print *,' igdtnum: ',(igdtnum)
+       print *,' jgdt: ',(jgdt)
 
 
        do n=1,nflds
 
-
+         listsec0(1) = g2d(10,n)     ! Discipline - GRIB Master Table Number (Code Table 0.0)
 
         ! Initialize GRIB2 message
          call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr)
@@ -707,36 +771,170 @@ contains
             print *, 'GRIB2 message', ierr
             return
          end if
- 
+
          call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr)
          if (ierr /= 0) then
              print *, 'GRIB2 message', ierr
              return
          end if
 
+! modifiy parametr    https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_temp4-0.shtml 
+         jpdt=-9999   
+         ipdtnum=0
 
 
+         jpdt(1)=g2d(10,n) ! cat number
+         jpdt(2)=g2d(11,n) ! parm number
+         jpdt(3)=2               ! (0-analysis, 1-initialazation, 2-forecast, .. GRIB2 - CODE TABLE 4.3 )
+         jpdt(4)=0   !   
+!         jpdt(5)=0   ! see Code ON388 Table A - need to be modified
+         jpdt(6)=1   !    unit (Hour=1)         
+         jpdt(7)=fortime     ! forecast hour
+         jpdt(8)=g2b(,n)   ! level ID (1-Ground or Water Surface, 101 mean sea level,  168-Ocean Model Layer, )
+         jpdt(9)=0   ! level value
+         jpdt(10)=255
+         jpdt(12)=0 ! 
+         jpdt(13)=0 
+         jpdt(14)=0 
+         jpdt(15)=0
+ !        if(gfld%ipdtlen>=16) jpdt(16)=gfld%ipdtmpl(16) ! spatial statistical processing
+         print*,'jpdtn,jpdt= ',jpdtn,jpdt(1:15)
+         ipdtlen=size(jpdt)
+
+         numcoord=0
+         coordlist=0. !needed for hybrid vertical coordinate
+         ibmap=255 ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
 
 
+ !          Assign example values
+         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
+     
+         ! Populate idrtmpl for Template 5.0
+         idrtmpl(1) = 0                 ! Reference value (scaled value of the minimum data point)
+         idrtmpl(2) = 0       ! Binary scale factor (scale by 2^E)
+         idrtmpl(3) = 0      ! Decimal scale factor (scale by 10^D)
+         idrtmpl(4) = 16                  ! Number of bits for each packed value
+         idrtmpl(5) = 0       ! Type of original field values (0 = floating point)
+         ! Reserved fields for Template 5.0
+         idrtmpl(6:11) = 0                      ! Reserved for future use
 
+         idrtlen=size(idrtmpl)
+
+
+         call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
+         idrtnum, idrtmpl, idrtlen, field(:,nflds), npt, ibmap, ierr)
+         if (ierr /= 0) then
+             print *, 'Error adding field to GRIB2 message', ierr
+             return
+         end if
+
+      end do
+
+      call gribend(cgrib,max_bytes,lengrib,ierr)
+      print*,'gribend status=',ierr
+      print*,'length of the final GRIB2 message in octets =',lengrib
+      call wryte(lunout, lengrib, cgrib)
+     
+      deallocate(cgrib)
+      return    
 
   end subroutine write_grib2_2d
 
 
 
 
+  !---------------------------------------------------------------------------------
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!Read Grib2 Template File!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!!!!!!!!!!!!!This subroutine read a template grib2 file field!!!!!!!!!!!!!!!!!!!!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !---------------------------------------------------------------------------------
+
+  subroutine read_gtemp(gfld)
+
+   ! This subroutine read a template grib2 file field
+   
+   implicit none
+
+   type(gribfield) :: gfld
+   integer :: lunout,iseek,icount,lskip,lgrib,lengrib,ierr
+!   integer :: nflds,numlocal,maxlocal
+   CHARACTER(len=1),allocatable,dimension(:) :: cgrib
+   integer, parameter :: msk1=32000
+   logical :: unpack,expand
+
+   icount=0
+   iseek=0
+
+   ! Use getlun90 to get a logical unit and baopenw to open the file
+   call getlun90(lunout, 1)
+   call baopenr(lunout, trim(input_file), ierr)
+   if (ierr /= 0) then
+       print *, 'Error opening template file ', trim(input_file)
+       return
+   end if
+
+   call skgb(lunout,iseek,msk1,lskip,lgrib)    ! lgrib is the number of bytes in message and lskip is the no of  
+   if (lgrib==0) exit    ! end loop at EOF or problem
+   if (lgrib>currlen) then
+      if (allocated(cgrib)) deallocate(cgrib)
+      allocate(cgrib(lgrib),stat=ierr)
+      currlen=lgrib
+   endif
+
+   call baread(lunout,lskip,lgrib,lengrib,cgrib)
+   if (lgrib/=lengrib) then
+      print *,' degrib2: IO Error.'
+      call errexit(9)
+   endif
+
+   iseek=lskip+lgrib
+   icount=icount+1
+   PRINT *
+   PRINT *,'GRIB MESSAGE ',icount,' starts at',lskip+1
+   PRINT *
+
+
+!   call gb_info(cgrib,lengrib,listsec0,listsec1,&
+!   nflds,numlocal,maxlocal,ierr)
+!   if (ierr/=0) then
+!     write(6,*) ' ERROR querying GRIB2 message = ',ierr
+!    stop 10
+!   endif
+
+!   print *,' SECTION 0: ',(listsec0(j),j=1,3)
+!   print *,' SECTION 1: ',(listsec1(j),j=1,13)
+
+
+   unpack=.false.
+   expand=.true.
+   ! get template info
+   call gf_getfld(cgrib,lengrib,0,unpack,expand,gfld,ierr)
+   if (ierr/=0) then
+       write(6,*) ' ERROR extracting field = ',ierr
+       cycle
+   endif
+
+   return
+
+  end subroutine read_gtemp
 
 
 
-  subroutine retrieve_time(fsrc, time_str, forecast_hour, ref_time_array)
+
+  !--------------------------------------------------------------------------------------
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!Retrieve Time From Input File!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !--------------------------------------------------------------------------------------
+
+  subroutine retrieve_time(forecast_hour, ref_time)
+
    use netcdf
    implicit none
 
-   character(len=*), intent(in) :: fsrc                  ! tripolar NetCDF file name
-
-   character(len=10), intent(out) :: time_str            ! Date in YYYYMMDDHH format
+!   character(len=10), intent(out) :: time_str            ! Date in YYYYMMDDHH format
    integer, intent(out) :: forecast_hour                 ! Forecast hour as an integer
-   integer, dimension(6), intent(out) :: ref_time_array  ! Array for GRIB2 reference time: [year, month, day, hour, minute, second]
+   integer, dimension(6), intent(out) :: ref_time  ! Array for GRIB2 reference time: [year, month, day, hour, minute, second]
 
    integer :: ncid, time_varid, T1_varid, T2_varid, ierr
    character(len=30) :: units_str                        ! Units attribute string for time
@@ -746,7 +944,7 @@ contains
    integer :: year, month, day, hour
    double precision :: hours_offset
  
-   call nf90_err(nf90_open(trim(ncfile), nf90_nowrite, ncid), 'opening '//fsrc)
+   call nf90_err(nf90_open(trim(input_file), nf90_nowrite, ncid), 'opening '//input_file)
    call nf90_err(nf90_inq_varid(ncid, 'time', time_varid), 'get variable ID: time')
    call nf90_err(nf90_get_var(ncid, time_varid, forecast_hour), 'get variable time')
    call nf90_err(nf90_get_att(ncid, time_varid, 'units', units_str), 'get attribute: units')
@@ -755,24 +953,23 @@ contains
    read(units_str(13:30), '(I4,1X,I2,1X,I2,1X,I2,1X,I2,1X,I2)') &
        ref_year, ref_month, ref_day, ref_hour, ref_min, ref_sec
 
-   ! Set up ref_time_array for GRIB2 Section 1
-   ref_time_array(1) = ref_year
-   ref_time_array(2) = ref_month
-   ref_time_array(3) = ref_day
-   ref_time_array(4) = ref_hour
-   ref_time_array(5) = ref_min
-   ref_time_array(6) = ref_sec
+   ! Set up ref_time for GRIB2 Section 1
+   ref_time(1) = ref_year
+   ref_time(2) = ref_month
+   ref_time(3) = ref_day
+   ref_time(4) = ref_hour
+   ref_time(5) = ref_min
+   ref_time(6) = ref_sec
 
    call nf90_err(nf90_inq_varid(ncid, 'average_T1', T1_varid), 'get variable ID: average_T1'))
    call nf90_err(nf90_get_var(ncid, T1_varid, T1), 'get variable: average_T1')
    call nf90_err(nf90_inq_varid(ncid, 'average_T2', T2_varid), 'get variable ID: average_T2'))
    call nf90_err(nf90_get_var(ncid, T2_varid, T2), 'get variable: average_T2')
-   call nf90_err(nf90_close(ncid), 'close: '//fsrc)
+   call nf90_err(nf90_close(ncid), 'close: '//input_file)
 
 !   forecast_string = int(T2 - T1)
 !   Format the datetime in YYYYMMDDHH format
-   write(time_str, '(I4.4,I2.2,I2.2,I2.2)') ref_year, ref_month, ref_day, ref_hour
-
+!   write(time_str, '(I4.4,I2.2,I2.2,I2.2)') ref_year, ref_month, ref_day, ref_hour
 
   end subroutine retrieve_time
 
