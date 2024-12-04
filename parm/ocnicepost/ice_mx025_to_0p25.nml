@@ -7,5 +7,6 @@ maskvar='tmask'
 sinvar=''
 cosvar=''
 angvar='ANGLET'
+grib2=.true.
 debug=.false.
 /

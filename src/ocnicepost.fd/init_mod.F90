@@ -20,14 +20,14 @@ module init_mod
        character(len=120)   :: long_name         !< A variable's discription
        character(len= 20)   :: units             !< A variable's unit
   !!!may need to add a fillvalue for grib2 file
-       integer              ::var_g1             !< Variables' grib2 coefficients g1-g8
-       integer              ::var_g2
-       integer              ::var_g3
-       integer              ::var_g4
-       integer              ::var_g5
-       integer              ::var_g6
-       integer              ::var_g7
-       integer              ::var_g8
+       integer              ::var_g1             !< Variables' grib2 coefficients g1-Dissipline
+       integer              ::var_g2             !< Variables' grib2 coefficients g2-Master Tables Version Number
+       integer              ::var_g3             !< Variables' grib2 coefficients g3-Section 1 originating center, used for local tables
+       integer              ::var_g4             !< Variables' grib2 coefficients g4-Section 1 Local Tables Version Number
+       integer              ::var_g5             !< Variables' grib2 coefficients g5-Section 4 Template 4.0 Parameter category
+       integer              ::var_g6             !< Variables' grib2 coefficients g6-Section 4 Template 4.0 Parameter number
+       integer              ::var_g7             !< Variables' grib2 coefficients g7-Level ID
+       integer              ::var_g8             !< Variables' grib2 coefficients g8-
   end type vardefs
 
   type(vardefs) :: outvars(maxvars)            !< An empty structure filled by reading a csv file describing the fields
@@ -52,6 +52,7 @@ module init_mod
   integer :: nyr        !< The y-dimension of the destination rectilinear grid
 
   integer :: logunit    !< The log unit
+  logical :: grib2      !< If true, write grib2 message
   logical :: debug      !< If true, print debug messages and intermediate files
   logical :: do_ocnpost !< If true, the source file is ocean, otherwise ice
 
@@ -65,7 +66,7 @@ contains
     integer :: srcdims(2), dstdims(2)
 
     namelist /ocnicepost_nml/ ftype, srcdims, wgtsdir, dstdims, maskvar, sinvar, cosvar, &
-         angvar, debug
+         angvar, grib2, debug
 
     ! --------------------------------------------------------
     ! read the name list
