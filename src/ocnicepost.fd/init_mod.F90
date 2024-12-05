@@ -164,14 +164,14 @@ contains
           outvars(nn)%name_gb2 = trim(c7)
           outvars(nn)%discription_gb2 = trim(c8)
           outvars(nn)%unit_gb2 = trim(c9)
-          outvars(nn)%var_g1 = trim(i10)
-          outvars(nn)%var_g2 = trim(i11)
-          outvars(nn)%var_g3 = trim(i12)
-          outvars(nn)%var_g4 = trim(i13)
-          outvars(nn)%var_g5 = trim(i14)
-          outvars(nn)%var_g6 = trim(i15)
-          outvars(nn)%var_g7 = trim(i16)
-          outvars(nn)%var_g8 = trim(i17)
+          outvars(nn)%var_g1 = i10
+          outvars(nn)%var_g2 = i11
+          outvars(nn)%var_g3 = i12
+          outvars(nn)%var_g4 = i13
+          outvars(nn)%var_g5 = i14
+          outvars(nn)%var_g6 = i15
+          outvars(nn)%var_g7 = i16
+          outvars(nn)%var_g8 = i17
        end if
     end do
     close(iounit)
