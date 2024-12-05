@@ -4,7 +4,6 @@ module utils_mod
   use init_mod, only : debug, logunit, vardefs, fsrc, input_file
   use grib_mod
 
-
   implicit none
 
   private
@@ -41,6 +40,7 @@ module utils_mod
   public packarrays
   public remap
   public dumpnc
+  public write_grib2_2d
   public nf90_err
 
 contains
@@ -600,10 +600,9 @@ contains
 
        ! internal variables
        integer(4) :: max_bytes, lengrib
-       integer, dimension(6), intent(out) :: ref_time 
-       integer :: lunout, ierr,
+       integer(6) :: ref_time 
+       integer :: lunout, ierr
        integer :: nflds, fortime, dij, npt
-       integer :: numlocal, maxlocal
        CHARACTER(len=1),allocatable,dimension(:) :: cgrib
 
        ! GRIB2 metadata arrays
@@ -686,7 +685,6 @@ contains
        print *,' igdtnum: ',(igdtnum)
        print *,' jgdt: ',(jgdt)
 
-       ! Initialize GRIB2 message
        call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr)
        if (ierr /= 0) then
           print *, 'Error initializing GRIB2 message', ierr
@@ -702,7 +700,6 @@ contains
          end if
 
 !        Create Section 4 parametrs    
-         jpdt=-9999   
          ipdtnum=0
 
          jpdt(1)=g2d(n)%var_g5  ! cat number
@@ -774,13 +771,12 @@ contains
 
    implicit none
 
-!   character(len=10), intent(out) :: time_str            ! Date in YYYYMMDDHH format
    integer, intent(out) :: forecast_hour                  ! Forecast hour as an integer
    integer, dimension(6), intent(out) :: ref_time         ! Array for GRIB2 reference time: [year, month, day, hour, minute, second]
 
    integer :: ncid, time_varid, T1_varid, T2_varid
-   character(len=30) :: units_str                        ! Units attribute string for time
-   double precision :: T1, T2                            ! Scalars to hold start and end time data
+   character(len=30) :: units_str
+   double precision :: T1, T2
 
    integer :: ref_year, ref_month, ref_day, ref_hour, ref_min, ref_sec
    integer :: year, month, day, hour
@@ -791,11 +787,9 @@ contains
    call nf90_err(nf90_get_var(ncid, time_varid, forecast_hour), 'get variable time')
    call nf90_err(nf90_get_att(ncid, time_varid, 'units', units_str), 'get attribute: units')
 
-   ! Assuming format "hours since YYYY-MM-DD HH:MM:SS"
    read(units_str(13:30), '(I4,1X,I2,1X,I2,1X,I2,1X,I2,1X,I2)') &
        ref_year, ref_month, ref_day, ref_hour, ref_min, ref_sec
 
-   ! Set up ref_time for GRIB2 Section 1
    ref_time(1) = ref_year
    ref_time(2) = ref_month
    ref_time(3) = ref_day
@@ -809,9 +803,6 @@ contains
    call nf90_err(nf90_get_var(ncid, T2_varid, T2), 'get variable: average_T2')
    call nf90_err(nf90_close(ncid), 'close: '//input_file)
 
-!   forecast_string = int(T2 - T1)
-!   Format the datetime in YYYYMMDDHH format
-!   write(time_str, '(I4.4,I2.2,I2.2,I2.2)') ref_year, ref_month, ref_day, ref_hour
 
   end subroutine retrieve_time
 
