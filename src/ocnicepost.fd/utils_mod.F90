@@ -593,16 +593,15 @@ contains
        implicit none
    
        character(len=*), intent(in) :: fname   
-       type(vardefs),    intent(in)  :: g2d
        integer,          intent(in) :: dims(2) 
        integer,          intent(in) :: nflds
        real,             intent(in) :: field(dims(1)*dims(2),nflds)
 
        ! internal variables
        integer(4) :: max_bytes, lengrib
-       integer(6) :: ref_time 
+       integer :: ref_time(6)
        integer :: lunout, ierr
-       integer :: nflds, fortime, dij, npt
+       integer :: fortime, dij, npt
        CHARACTER(len=1),allocatable,dimension(:) :: cgrib
 
        ! GRIB2 metadata arrays
@@ -613,6 +612,7 @@ contains
        integer(4) :: igds(5)
        integer :: numcoord, ibmap
        real(4) :: coordlist
+       integer :: n, lon0, lon1, lat0, lat1
       
        npt = dims(1) * dims(2)
    
@@ -797,9 +797,9 @@ contains
    ref_time(5) = ref_min
    ref_time(6) = ref_sec
 
-   call nf90_err(nf90_inq_varid(ncid, 'average_T1', T1_varid), 'get variable ID: average_T1'))
+   call nf90_err(nf90_inq_varid(ncid, 'average_T1', T1_varid), 'get variable ID: average_T1')
    call nf90_err(nf90_get_var(ncid, T1_varid, T1), 'get variable: average_T1')
-   call nf90_err(nf90_inq_varid(ncid, 'average_T2', T2_varid), 'get variable ID: average_T2'))
+   call nf90_err(nf90_inq_varid(ncid, 'average_T2', T2_varid), 'get variable ID: average_T2')
    call nf90_err(nf90_get_var(ncid, T2_varid, T2), 'get variable: average_T2')
    call nf90_err(nf90_close(ncid), 'close: '//input_file)
 
