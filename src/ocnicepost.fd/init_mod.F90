@@ -7,18 +7,18 @@ module init_mod
   real, parameter :: maxvars = 50              !< The maximum number of fields expected in a source file
 
   type :: vardefs
-  character(len= 20)   :: var_name          !< A variable's variable name
-  !     character(len=120)   :: long_name         !< A variable's long name
-  !     character(len= 20)   :: units             !< A variable's unit
+       character(len= 20)   :: var_name          !< A variable's variable name
        character(len= 20)   :: var_remapmethod   !< A variable's mapping method
+       character(len=120)   :: long_name         !< A variable's long name
+       character(len= 20)   :: units             !< A variable's unit
        integer              :: var_dimen         !< A variable's dimensionality
        character(len=  4)   :: var_grid          !< A variable's input grid location; all output locations are on cell centers
        character(len= 20)   :: var_pair          !< A variable's pair
        character(len=  4)   :: var_pair_grid     !< A pair variable grid
        real                 :: var_fillvalue     !< A variable's fillvalue
-       character(len= 20)   :: var_name_gb2      !< A variable's grib2 variable name
-       character(len=120)   :: long_name         !< A variable's discription
-       character(len= 20)   :: units             !< A variable's unit
+       character(len= 20)   :: name_gb2          !< A variable's grib2 variable name
+       character(len=120)   :: discription_gb2   !< A variable's discription
+       character(len= 20)   :: unit_gb2          !< A variable's unit       
   !!!may need to add a fillvalue for grib2 file
        integer              ::var_g1             !< Variables' grib2 coefficients g1-Dissipline
        integer              ::var_g2             !< Variables' grib2 coefficients g2-Master Tables Version Number
@@ -161,9 +161,9 @@ contains
           outvars(nn)%var_remapmethod = trim(c4)
           outvars(nn)%var_pair = trim(c5)
           outvars(nn)%var_pair_grid = trim(c6)
-          outvars(nn)%var_name_gb2 = trim(c7)
-          outvars(nn)%var_discription = trim(c8)
-          outvars(nn)%var_unit = trim(c9)
+          outvars(nn)%name_gb2 = trim(c7)
+          outvars(nn)%discription_gb2 = trim(c8)
+          outvars(nn)%unit_gb2 = trim(c9)
           outvars(nn)%var_g1 = trim(i10)
           outvars(nn)%var_g2 = trim(i11)
           outvars(nn)%var_g3 = trim(i12)

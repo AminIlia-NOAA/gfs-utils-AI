@@ -803,7 +803,6 @@ contains
    call nf90_err(nf90_get_var(ncid, T2_varid, T2), 'get variable: average_T2')
    call nf90_err(nf90_close(ncid), 'close: '//input_file)
 
-
   end subroutine retrieve_time
 
 
