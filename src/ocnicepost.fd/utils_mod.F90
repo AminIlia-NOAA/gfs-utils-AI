@@ -2,7 +2,6 @@ module utils_mod
 
   use netcdf
   use init_mod, only : debug, logunit, vardefs, fsrc, input_file
-  use grib_mod
 
   implicit none
 
