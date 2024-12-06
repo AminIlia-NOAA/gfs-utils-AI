@@ -618,8 +618,7 @@ contains
    
        max_bytes = npt * 4  ! Estimated max bytes
 
-       ! Use getlun90 to get a logical unit and baopenw to open the file
-       call getlun90(lunout, 1)
+       call getlun(lunout)
        call baopenw(lunout, trim(fname), ierr)
        if (ierr /= 0) then
            print *, 'Error opening grib2 file ', trim(fname)
@@ -757,6 +756,27 @@ contains
       return
 
   end subroutine write_grib2_2d
+
+
+!--------------------------------------------------------------------------------------
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!To get a lun used for bacio!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !--------------------------------------------------------------------------------------
+  subroutine getlun(lun)
+   integer, intent(out) :: lun
+   logical :: is_open
+   lun = 50  
+   do
+       inquire(unit=lun, opened=is_open)
+       if (.not. is_open) then
+           return  
+       else
+           lun = lun + 1
+       end if
+   end do
+  end subroutine getlun
+
 
 
 
