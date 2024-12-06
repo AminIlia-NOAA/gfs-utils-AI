@@ -591,8 +591,9 @@ contains
    
        implicit none
    
-       character(len=*), intent(in) :: fname   
-       integer,          intent(in) :: dims(2) 
+       character(len=*), intent(in) :: fname
+       type(vardefs), allocatable, dimension(:) :: g2d  
+       integer,          intent(in) :: dims(2)
        integer,          intent(in) :: nflds
        real,             intent(in) :: field(dims(1)*dims(2),nflds)
 
@@ -708,7 +709,7 @@ contains
 !         jpdt(5)=0              ! 
          jpdt(6)=1              !    unit (Hour=1)         
          jpdt(7)=fortime        ! forecast hour
-         jpdt(8)=g2b(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level,  168-Ocean Model Layer,...)
+         jpdt(8)=g2d(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level,  168-Ocean Model Layer,...)
          jpdt(9)=0              ! level value
          jpdt(10)=255
          jpdt(12)=0             ! 
