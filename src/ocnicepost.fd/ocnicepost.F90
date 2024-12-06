@@ -383,16 +383,16 @@ program ocnicepost
    if (debug) write(logunit, '(a)')'GRIB2 2D output file: '//trim(gout)
 
    if (allocated(rgb2d) .and. allocated(rgc2d)) then
-      grib2d(:, 1:nconsd2d) = rgc2d
-      grib2d(:, nconsd2d+1:nconsd2d+nbinin2d) = rgb2d
-      g2d(:, 1:nconsd2d) = c2d
-      g2d(:, nconsd2d+1:nconsd2d+nbinin2d) = b2d
+      grib2d(1:nconsd2d) = rgc2d
+      grib2d(nconsd2d+1:nconsd2d+nbinin2d) = rgb2d
+      g2d(1:nconsd2d) = c2d
+      g2d(nconsd2d+1:nconsd2d+nbinin2d) = b2d
    else if (allocated(rgb2d)) then
-      grib2d(:, 1:nconsd2d) = rgc2d
-      g2d(:, 1:nconsd2d) = c2d
+      grib2d(1:nconsd2d) = rgc2d
+      g2d(1:nconsd2d) = c2d
    else if (allocated(rgc2d)) then
-      grib2d(:, 1:nbinin2d) = rgb2d
-      g2d(:, 1:nbinin2d) = b2d
+      grib2d(1:nbinin2d) = rgb2d
+      g2d(1:nbinin2d) = b2d
    end if
 
    call write_grib2_2d(gout, g2d, dims=(/nxr,nyr/), nconsd2d+nbinin2d, grib2d)
