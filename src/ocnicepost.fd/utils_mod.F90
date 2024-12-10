@@ -686,12 +686,12 @@ contains
        jgdt(6) = 0                
        jgdt(7) = 0                 
        jgdt(8) = dims(1)             
-       jgdt(9) = dims(1)        
+       jgdt(9) = dims(2)        
        jgdt(10) = 0
        jgdt(11) = 0
        jgdt(12) = lat0
        jgdt(13) = lon0
-       jgdt(14) = 14
+       jgdt(14) = 48
        jgdt(15) = lat1
        jgdt(16) = lon1
        jgdt(17) = dij
@@ -711,7 +711,7 @@ contains
        write(logunit, *) 'igdtnum, igdtlen: ', igdtnum, igdtlen
        write(logunit, *) 'jgdt: ', jgdt
        write(logunit, *) 'igds: ', igds
-       write(logunit, *) 'igds: ', dij
+       write(logunit, *) 'dij: ', dij
 !       write(logunit, *) 'cgrib: ', cgrib
        write(logunit, *) 'max_bytes: ', max_bytes
 
