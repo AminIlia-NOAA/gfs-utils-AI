@@ -620,7 +620,7 @@ contains
    
        max_bytes = npt * 4  ! Estimated max bytes
 
-       allocate(cgrib(max_bytes)) ! allocate cgrib
+       allocate(cgrib(max_bytes)) ! allocate
 
 
        call getlun(lunout)
@@ -662,7 +662,7 @@ contains
        lat0 = -90000000
        lat1 = 90000000
 
-       ! Populate the jgdt array for Template 3.0
+       ! Populate the jgdt array for Template 3.0 
        jgdt(1) = dims(2)              ! Number of latitude points
        jgdt(2) = dims(1)              ! Number of longitude points
        jgdt(3) = lat0                 ! Latitude of first grid point (microdegrees)
@@ -686,8 +686,11 @@ contains
 
        igdtlen=size(jgdt)
 
-       write(logunit, *) 'igdtnum: ', igdtnum
+       write(logunit, *) 'igdtnum, igdtlen: ', igdtnum, igdtlen
        write(logunit, *) 'jgdt: ', jgdt
+       write(logunit, *) 'igds: ', igds
+       write(logunit, *) 'cgrib: ', cgrib
+       write(logunit, *) 'max_bytes: ', max_bytes
 
        call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr) 
        if (ierr /= 0) then
@@ -697,7 +700,10 @@ contains
 
        do n=1,nflds
 
-         call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr)
+         write(logunit, *) 'n, nflds, npt: ', n, nflds, npt
+         write(logunit, *) 'max_bytes: ', max_bytes
+
+         call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr) ! (there is an error here )
          if (ierr /= 0) then
              write(logunit, *) 'Error adding grid to GRIB2 message', ierr
              return
