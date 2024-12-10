@@ -621,7 +621,7 @@ contains
        call getlun(lunout)
        call baopenw(lunout, trim(fname), ierr)
        if (ierr /= 0) then
-           write(logunit, '(A, I5)') 'Error opening grib2 file ', trim(fname)
+           write(logunit, *) 'Error opening grib2 file ', trim(fname)
            return
        end if
    
@@ -681,12 +681,12 @@ contains
 
        igdtlen=size(jgdt)
 
-       write(logunit, '(A, I5)') 'igdtnum: ', igdtnum
-       write(logunit, '(A, I5)') 'jgdt: ', jgdt
+       write(logunit, *) 'igdtnum: ', igdtnum
+       write(logunit, *) 'jgdt: ', jgdt
 
        call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr)
        if (ierr /= 0) then
-          write(logunit, '(A, I5)') 'Error initializing GRIB2 message', ierr
+          write(logunit, *) 'Error initializing GRIB2 message', ierr
           return
        end if
 
@@ -694,7 +694,7 @@ contains
 
          call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr)
          if (ierr /= 0) then
-             write(logunit, '(A, I5)') 'Error adding grid to GRIB2 message', ierr
+             write(logunit, *) 'Error adding grid to GRIB2 message', ierr
              return
          end if
 
@@ -716,7 +716,7 @@ contains
          jpdt(14)=0 
          jpdt(15)=0
 
-         write(logunit, '(A, I5, A, 15I5)') 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:15)
+         write(logunit, *) 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:15)
 
 
          ipdtlen=size(jpdt)
@@ -742,15 +742,15 @@ contains
          call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
          idrtnum, idrtmpl, idrtlen, field(:,nflds), npt, ibmap, ierr)
          if (ierr /= 0) then
-             write(logunit, '(A, I5)') 'Error adding field to GRIB2 message', ierr
+             write(logunit, *) 'Error adding field to GRIB2 message', ierr
              return
          end if
 
       end do
 
       call gribend(cgrib,max_bytes,lengrib,ierr)
-      write(logunit, '(A, I5)') 'gribend status=',ierr
-      write(logunit, '(A, I5)') 'length of the final GRIB2 message in octets =',lengrib
+      write(logunit, *) 'gribend status=',ierr
+      write(logunit, *) 'length of the final GRIB2 message in octets =',lengrib
       call wryte(lunout, lengrib, cgrib)
      
       deallocate(cgrib)
