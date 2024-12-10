@@ -682,7 +682,7 @@ contains
        igdtlen=size(jgdt)
 
        write(logunit, '(A, I5)') 'igdtnum: ', igdtnum
-       write(logunit, '(A, I5)')' jgdt: ',(jgdt)
+       write(logunit, '(A, I5)') 'jgdt: ', jgdt
 
        call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr)
        if (ierr /= 0) then
@@ -860,9 +860,8 @@ subroutine grib_err(ierr, msg)
    character(len=*), intent(in) :: msg
 
    if (ierr /= 0) then
-       open(unit=20, file="grib_errors.log", status="unknown", action="write")
-       write(20, *) "GRIB2 Error:", trim(msg), "Error code:", ierr
-       close(20)
-       stop
+       write(0, *) "GRIB2 Error:", trim(msg), "Error code:", ierr
+        !stop ierr
+       stop 99
    end if
 end subroutine grib_err
