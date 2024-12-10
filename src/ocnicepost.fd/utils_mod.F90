@@ -620,7 +620,8 @@ contains
    
        max_bytes = npt * 4  ! Estimated max bytes
 
-       allocate(cgrib(max_bytes))
+       allocate(cgrib(max_bytes)) ! allocate cgrib
+
 
        call getlun(lunout)
        call baopenw(lunout, trim(fname), ierr)
@@ -688,7 +689,7 @@ contains
        write(logunit, *) 'igdtnum: ', igdtnum
        write(logunit, *) 'jgdt: ', jgdt
 
-       call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr)
+       call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr) 
        if (ierr /= 0) then
           write(logunit, *) 'Error initializing GRIB2 message', ierr
           return
