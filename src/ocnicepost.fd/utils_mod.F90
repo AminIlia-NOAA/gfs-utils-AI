@@ -662,19 +662,41 @@ contains
        lat0 = -90000000
        lat1 = 90000000
 
-       ! Populate the jgdt array for Template 3.0 
-       jgdt(1) = dims(2)              ! Number of latitude points
-       jgdt(2) = dims(1)              ! Number of longitude points
-       jgdt(3) = lat0                 ! Latitude of first grid point (microdegrees)
-       jgdt(4) = lon0                 ! Longitude of first grid point (microdegrees)
-       jgdt(5) = 0                    ! Resolution and component flags
-       jgdt(6) = lat1                 ! Latitude of last grid point (microdegrees)
-       jgdt(7) = lon1                 ! Longitude of last grid point (microdegrees)
-       jgdt(8) = dij                  ! Grid increment in longitude direction (microdegrees)
-       jgdt(9) = dij                  ! Grid increment in latitude direction (microdegrees)
-       jgdt(10) = 0                   ! Scanning mode (0 for default)
+       ! Populate the jgdt array for Template 3.0 (this seems to be wrong)
+!       jgdt(1) = dims(2)              ! Number of latitude points
+!       jgdt(2) = dims(1)              ! Number of longitude points
+!       jgdt(3) = lat0                 ! Latitude of first grid point (microdegrees)
+!       jgdt(4) = lon0                 ! Longitude of first grid point (microdegrees)
+!       jgdt(5) = 0                    ! Resolution and component flags
+!       jgdt(6) = lat1                 ! Latitude of last grid point (microdegrees)
+!       jgdt(7) = lon1                 ! Longitude of last grid point (microdegrees)
+!       jgdt(8) = dij                  ! Grid increment in longitude direction (microdegrees)
+!       jgdt(9) = dij                  ! Grid increment in latitude direction (microdegrees)
+!       jgdt(10) = 0                   ! Scanning mode (0 for default)
 !       ! Remaining values are reserved or unused for Template 3.0
-       jgdt(11:19) = 0
+!       jgdt(11:19) = 0
+
+
+              ! Populate the jgdt array for Template 3.0 ()
+       jgdt(1) = 6              
+       jgdt(2) = 0              
+       jgdt(3) = 0                
+       jgdt(4) = 0                 
+       jgdt(5) = 0                  
+       jgdt(6) = 0                
+       jgdt(7) = 0                 
+       jgdt(8) = dims(1)             
+       jgdt(9) = dims(1)        
+       jgdt(10) = 0
+       jgdt(11) = 0
+       jgdt(12) = lat0
+       jgdt(13) = lon0
+       jgdt(14) = 14
+       jgdt(15) = lat1
+       jgdt(16) = lon1
+       jgdt(17) = dij
+       jgdt(18) = dij
+       jgdt(19) = 0
 
        igdtnum=0
        ! Define igds GRIB2 - SECTION 3
@@ -689,7 +711,8 @@ contains
        write(logunit, *) 'igdtnum, igdtlen: ', igdtnum, igdtlen
        write(logunit, *) 'jgdt: ', jgdt
        write(logunit, *) 'igds: ', igds
-       write(logunit, *) 'cgrib: ', cgrib
+       write(logunit, *) 'igds: ', dij
+!       write(logunit, *) 'cgrib: ', cgrib
        write(logunit, *) 'max_bytes: ', max_bytes
 
        call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr) 
@@ -703,7 +726,8 @@ contains
          write(logunit, *) 'n, nflds, npt: ', n, nflds, npt
          write(logunit, *) 'max_bytes: ', max_bytes
 
-         call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr) ! (there is an error here )
+!         call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr) ! (there is an error here )
+         call addgrid(cgrib, max_bytes, igds, jgdt, 100, ierr) ! (there is an error here )
          if (ierr /= 0) then
              write(logunit, *) 'Error adding grid to GRIB2 message', ierr
              return
