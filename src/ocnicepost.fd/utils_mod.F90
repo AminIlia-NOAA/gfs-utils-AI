@@ -688,7 +688,7 @@ contains
        jgdt(8) = dims(1)             
        jgdt(9) = dims(2)        
        jgdt(10) = 0
-       jgdt(11) = 0
+       jgdt(11) = -1   !0
        jgdt(12) = lat0
        jgdt(13) = lon0
        jgdt(14) = 48
@@ -696,7 +696,7 @@ contains
        jgdt(16) = lon1
        jgdt(17) = dij
        jgdt(18) = dij
-       jgdt(19) = 0
+       jgdt(19) = 64  !0
 
        igdtnum=0
        ! Define igds GRIB2 - SECTION 3
@@ -726,8 +726,8 @@ contains
          write(logunit, *) 'n, nflds, npt: ', n, nflds, npt
          write(logunit, *) 'max_bytes: ', max_bytes
 
-!         call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr) ! (there is an error here )
-         call addgrid(cgrib, max_bytes, igds, jgdt, 100, ierr) ! (there is an error here )
+!         call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr) ! (there is an error here ) maybe the problem is from max byte should ask
+         call addgrid(cgrib, max_bytes, igds, jgdt, 30, ierr) ! (there is an error here )
          if (ierr /= 0) then
              write(logunit, *) 'Error adding grid to GRIB2 message', ierr
              return
