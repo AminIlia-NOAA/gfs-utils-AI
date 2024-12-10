@@ -608,11 +608,13 @@ contains
        integer :: listsec0(2), listsec1(13)
        integer :: igdtnum, ipdtnum, idrtnum
        integer :: igdtlen, ipdtlen, idrtlen
-       integer, allocatable :: jgdt(:), jpdt(:), idrtmpl(:)
+       integer :: jgdt(19), jpdt(15), idrtmpl(11)
        integer(4) :: igds(5)
        integer :: numcoord, ibmap
        real(4) :: coordlist
        integer :: n, lon0, lon1, lat0, lat1
+
+
       
        npt = dims(1) * dims(2)
    
@@ -717,7 +719,6 @@ contains
          jpdt(15)=0
 
          write(logunit, *) 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:15)
-
 
          ipdtlen=size(jpdt)
 
