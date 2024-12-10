@@ -807,8 +807,10 @@ contains
    call nf90_err(nf90_get_var(ncid, time_varid, forecast_hour), 'get variable time')
    call nf90_err(nf90_get_att(ncid, time_varid, 'units', units_str), 'get attribute: units')
 
-   read(units_str(13:30), '(I4,1X,I2,1X,I2,1X,I2,1X,I2,1X,I2)') &
+
+   read(units_str(12:29), '(I4,1X,I2,1X,I2,1X,I2,1X,I2,1X,I2)') &           ! (12:29) for testing ice model - (13:30) for testing ocean model
        ref_year, ref_month, ref_day, ref_hour, ref_min, ref_sec
+       
 
    ref_time(1) = ref_year
    ref_time(2) = ref_month
@@ -817,11 +819,11 @@ contains
    ref_time(5) = ref_min
    ref_time(6) = ref_sec
 
-   call nf90_err(nf90_inq_varid(ncid, 'average_T1', T1_varid), 'get variable ID: average_T1')
-   call nf90_err(nf90_get_var(ncid, T1_varid, T1), 'get variable: average_T1')
-   call nf90_err(nf90_inq_varid(ncid, 'average_T2', T2_varid), 'get variable ID: average_T2')
-   call nf90_err(nf90_get_var(ncid, T2_varid, T2), 'get variable: average_T2')
-   call nf90_err(nf90_close(ncid), 'close: '//input_file)
+!   call nf90_err(nf90_inq_varid(ncid, 'average_T1', T1_varid), 'get variable ID: average_T1')
+!   call nf90_err(nf90_get_var(ncid, T1_varid, T1), 'get variable: average_T1')
+!   call nf90_err(nf90_inq_varid(ncid, 'average_T2', T2_varid), 'get variable ID: average_T2')
+!   call nf90_err(nf90_get_var(ncid, T2_varid, T2), 'get variable: average_T2')
+!   call nf90_err(nf90_close(ncid), 'close: '//input_file)
 
   end subroutine retrieve_time
 
