@@ -620,6 +620,8 @@ contains
    
        max_bytes = npt * 4  ! Estimated max bytes
 
+       allocate(cgrib(max_bytes))
+
        call getlun(lunout)
        call baopenw(lunout, trim(fname), ierr)
        if (ierr /= 0) then
