@@ -640,7 +640,7 @@ contains
        listsec1(2) = 4                 ! Originating Sub-centre (local table) EMC=4
        listsec1(3) = 0                 ! GRIB Master Tables Version Number (Code Table 1.0)
 !       listsec1(3) = g2d(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
-       listsec1(4) = 1                 ! GRIB Local Tables Version Number (Code Table 1.1)
+       listsec1(4) = 0                 ! GRIB Local Tables Version Number (Code Table 1.1)
        listsec1(5) = 1                 ! Significance of Reference Time (Code Table 1.2)
        listsec1(6) = ref_time(1)       ! Reference Time - Year -4digits
        listsec1(7) = ref_time(2)       ! Reference Time - Month
@@ -688,15 +688,15 @@ contains
        jgdt(8) = dims(1)             
        jgdt(9) = dims(2)        
        jgdt(10) = 0
-       jgdt(11) = -1   !0
+       jgdt(11) = 0   !-1
        jgdt(12) = lat0
        jgdt(13) = lon0
-       jgdt(14) = 48
+       jgdt(14) = 48   !0
        jgdt(15) = lat1
        jgdt(16) = lon1
        jgdt(17) = dij
        jgdt(18) = dij
-       jgdt(19) = 64  !0
+       jgdt(19) = 0  !64
 
        igdtnum=0
        ! Define igds GRIB2 - SECTION 3
@@ -709,7 +709,7 @@ contains
        igdtlen=size(jgdt)
 
        !!!!these are for debuging (remove after done)
-       write(logunit, *) 'listsec, listsec1: ', listsec0, listsec1
+       write(logunit, *) 'listsec0, listsec1: ', listsec0, listsec1
        write(logunit, *) 'igdtnum, igdtlen: ', igdtnum, igdtlen
        write(logunit, *) 'jgdt: ', jgdt
        write(logunit, *) 'igds: ', igds
@@ -729,10 +729,8 @@ contains
        do n=1,nflds
 
          write(logunit, *) 'n, nflds, npt: ', n, nflds, npt
-         write(logunit, *) 'max_bytes: ', max_bytes
 
-!         call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr) ! (there is an error here ) maybe the problem is from max byte should ask
-         call addgrid(cgrib, max_bytes, igds, jgdt, 30, ierr) ! (there is an error here )
+         call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr) ! there is an error here 
          if (ierr /= 0) then
              write(logunit, *) 'Error adding grid to GRIB2 message', ierr
              return
