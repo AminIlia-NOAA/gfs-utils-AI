@@ -662,7 +662,7 @@ contains
        lat0 = -90000000
        lat1 = 90000000
 
-       ! Populate the jgdt array for Template 3.0 (this seems to be wrong)
+       ! Populate the jgdt array for Template 3.0 (this seems to be wrong format)
 !       jgdt(1) = dims(2)              ! Number of latitude points
 !       jgdt(2) = dims(1)              ! Number of longitude points
 !       jgdt(3) = lat0                 ! Latitude of first grid point (microdegrees)
@@ -677,7 +677,7 @@ contains
 !       jgdt(11:19) = 0
 
 
-              ! Populate the jgdt array for Template 3.0 ()
+       ! Populate the jgdt array for Template 3.0 (changed parameters to current grib2 files)
        jgdt(1) = 6              
        jgdt(2) = 0              
        jgdt(3) = 0                
@@ -708,12 +708,17 @@ contains
 
        igdtlen=size(jgdt)
 
+       !!!!these are for debuging (remove after done)
+       write(logunit, *) 'listsec, listsec1: ', listsec0, listsec1
        write(logunit, *) 'igdtnum, igdtlen: ', igdtnum, igdtlen
        write(logunit, *) 'jgdt: ', jgdt
        write(logunit, *) 'igds: ', igds
        write(logunit, *) 'dij: ', dij
-!       write(logunit, *) 'cgrib: ', cgrib
        write(logunit, *) 'max_bytes: ', max_bytes
+       write(logunit, *) 'forcast time: ', fortime
+       write(logunit, *) 'refference time: ', ref_time
+
+
 
        call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr) 
        if (ierr /= 0) then
@@ -843,9 +848,9 @@ contains
    call nf90_err(nf90_get_att(ncid, time_varid, 'units', units_str), 'get attribute: units')
 
 
-   read(units_str(12:29), '(I4,1X,I2,1X,I2,1X,I2,1X,I2,1X,I2)') &           ! (12:29) for testing ice model - (13:30) for testing ocean model
+   read(units_str(12:29), '(I4,1X,I2,1X,I2,1X,I2,1X,I2,1X,I2)') &           ! (12:29) for testing ice model (need to be changed request sent) - (13:30) is final and for testing the ocean model
        ref_year, ref_month, ref_day, ref_hour, ref_min, ref_sec
-       
+   forecast_hour=24*forecast_hour ! just for testing ice model (remove it once ice time unit fixed)
 
    ref_time(1) = ref_year
    ref_time(2) = ref_month
