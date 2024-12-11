@@ -735,7 +735,7 @@ contains
 
          write(logunit, *) 'n, nflds, npt: ', n, nflds, npt
 
-         call addgrid(cgrib, max_bytes, igds, jgdt, 100, ideflist, idefnum ierr) ! there is an internal error here 
+         call addgrid(cgrib, max_bytes, igds, jgdt, 100, ideflist, idefnum, ierr) ! there is an internal error here 
          if (ierr /= 0) then
              write(logunit, *) 'Error adding grid to GRIB2 message', ierr
              return
