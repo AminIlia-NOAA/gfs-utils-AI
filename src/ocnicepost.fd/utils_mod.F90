@@ -618,7 +618,7 @@ contains
        logical :: bmp(dims(1)*dims(2)) 
        integer :: bsf, nbits
        real    :: ref_val,Range
-       
+
        idefnum = 0
        ideflist=0       !Used if igds(3) .ne. 0. Dummy array otherwise
 
@@ -771,25 +771,14 @@ contains
          ! Assign Template 5
          idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
 
-         ref_val=minval(field(:,n))
-         range=maxval(field(:,n))-ref_val
-         if (range > 0.0) then
-            bsf = ceiling(log2(range / 2.0**31))
-         else
-            bsf = 0
-         end if
-         if (range > 0.0) then
-            nbits = ceiling(log2(range * 2.0**(-bsf)))
-         else
-            nbits = 0
-         end if
+
 
      
          ! Populate idrtmpl for Template 5.0
-         idrtmpl(1) = ref_val       ! Reference value (scaled value of the minimum data point)
-         idrtmpl(2) = bsf           ! Binary scale factor (scale by 2^E)
+         idrtmpl(1) = 0       ! Reference value (scaled value of the minimum data point)
+         idrtmpl(2) = 0           ! Binary scale factor (scale by 2^E)
          idrtmpl(3) = 0             ! Decimal scale factor (scale by 10^D)
-         idrtmpl(4) = nbits         ! Number of bits for each packed value
+         idrtmpl(4) = 0         ! Number of bits for each packed value
          idrtmpl(5) = 0             ! Type of original field values (0 = floating point)
          ! Reserved fields for Template 5.0
          idrtmpl(6:11) = 0          ! Reserved for future use
