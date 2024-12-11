@@ -615,6 +615,7 @@ contains
        integer :: n, lon0, lon1, lat0, lat1
 
        integer :: ideflist,idefnum
+       logical :: bmp(dims(1)*dims(2)) 
 
        idefnum = 0
        ideflist=0       !Used if igds(3) .ne. 0. Dummy array otherwise
@@ -625,8 +626,7 @@ contains
    
        max_bytes = npt * 4  ! Estimated max bytes
 
-!       allocate(cgrib(max_bytes)) ! allocate
-       allocate(cgrib(max_bytes*4)) ! allocate
+       allocate(cgrib(max_bytes)) ! allocate
 
        call getlun(lunout)
        call baopenw(lunout, trim(fname), ierr)
@@ -645,7 +645,7 @@ contains
        listsec1(2) = 4                 ! Originating Sub-centre (local table) EMC=4
        listsec1(3) = 0                 ! GRIB Master Tables Version Number (Code Table 1.0)
 !       listsec1(3) = g2d(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
-       listsec1(4) = 0                 ! GRIB Local Tables Version Number (Code Table 1.1)
+       listsec1(4) = 1                 ! GRIB Local Tables Version Number (Code Table 1.1)
        listsec1(5) = 1                 ! Significance of Reference Time (Code Table 1.2)
        listsec1(6) = ref_time(1)       ! Reference Time - Year -4digits
        listsec1(7) = ref_time(2)       ! Reference Time - Month
@@ -748,7 +748,7 @@ contains
          jpdt(2)=g2d(n)%var_g6  ! parm number
          jpdt(3)=2              ! (0-analysis, 1-initialazation, 2-forecast, .. GRIB2 - CODE TABLE 4.3 )
          jpdt(4)=0              !   
-!         jpdt(5)=0              ! 
+         jpdt(5)=0              ! 
          jpdt(6)=1              !    unit (Hour=1)         
          jpdt(7)=fortime        ! forecast hour
          jpdt(8)=g2d(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level,  168-Ocean Model Layer,...)
@@ -766,6 +766,7 @@ contains
          numcoord=0
          coordlist=0.  ! needed for hybrid vertical coordinate
          ibmap=255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
+         bmp=.true.
 
          ! Assign Template 5
          idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
@@ -773,7 +774,7 @@ contains
          ! Populate idrtmpl for Template 5.0
          idrtmpl(1) = 0       ! Reference value (scaled value of the minimum data point)
          idrtmpl(2) = 0       ! Binary scale factor (scale by 2^E)
-         idrtmpl(3) = 0       ! Decimal scale factor (scale by 10^D)
+         idrtmpl(3) = 2       ! Decimal scale factor (scale by 10^D)
          idrtmpl(4) = 16      ! Number of bits for each packed value
          idrtmpl(5) = 0       ! Type of original field values (0 = floating point)
          ! Reserved fields for Template 5.0
@@ -782,7 +783,7 @@ contains
          idrtlen=size(idrtmpl)
 
          call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
-         idrtnum, idrtmpl, idrtlen, field(:,nflds), npt, ibmap, ierr)
+         idrtnum, idrtmpl, 100, field(:,n), npt, ibmap,bmp, ierr)
          if (ierr /= 0) then
              write(logunit, *) 'Error adding field to GRIB2 message', ierr
              return
