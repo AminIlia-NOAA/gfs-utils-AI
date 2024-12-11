@@ -783,7 +783,7 @@ contains
          idrtlen=size(idrtmpl)
 
          call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
-         idrtnum, idrtmpl, 100, field(:,n), npt, ibmap,bmp, ierr)
+         idrtnum, idrtmpl, 100, field(:,n), npt, ibmap, bmp, ierr)
          if (ierr /= 0) then
              write(logunit, *) 'Error adding field to GRIB2 message', ierr
              return
