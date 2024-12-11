@@ -620,8 +620,8 @@ contains
    
        max_bytes = npt * 4  ! Estimated max bytes
 
-       allocate(cgrib(max_bytes)) ! allocate
-
+!       allocate(cgrib(max_bytes)) ! allocate
+       allocate(cgrib(max_bytes*4)) ! allocate
 
        call getlun(lunout)
        call baopenw(lunout, trim(fname), ierr)
@@ -730,7 +730,7 @@ contains
 
          write(logunit, *) 'n, nflds, npt: ', n, nflds, npt
 
-         call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr) ! there is an error here 
+         call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr) ! there is an internal error here 
          if (ierr /= 0) then
              write(logunit, *) 'Error adding grid to GRIB2 message', ierr
              return
