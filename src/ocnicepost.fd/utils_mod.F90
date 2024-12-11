@@ -614,6 +614,9 @@ contains
        real(4) :: coordlist
        integer :: n, lon0, lon1, lat0, lat1
 
+       idefnum = 0
+       ideflist=0       !Used if igds(3) .ne. 0. Dummy array otherwise
+
 
       
        npt = dims(1) * dims(2)
@@ -730,7 +733,7 @@ contains
 
          write(logunit, *) 'n, nflds, npt: ', n, nflds, npt
 
-         call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ierr) ! there is an internal error here 
+         call addgrid(cgrib, max_bytes, igds, jgdt, 100, ideflist, idefnum ierr) ! there is an internal error here 
          if (ierr /= 0) then
              write(logunit, *) 'Error adding grid to GRIB2 message', ierr
              return
