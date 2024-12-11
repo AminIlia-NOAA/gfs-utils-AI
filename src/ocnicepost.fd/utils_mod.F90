@@ -614,6 +614,8 @@ contains
        real(4) :: coordlist
        integer :: n, lon0, lon1, lat0, lat1
 
+       integer :: ideflist,idefnum
+
        idefnum = 0
        ideflist=0       !Used if igds(3) .ne. 0. Dummy array otherwise
 
