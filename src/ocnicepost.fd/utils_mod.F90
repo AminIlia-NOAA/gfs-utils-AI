@@ -40,6 +40,7 @@ module utils_mod
   public remap
   public dumpnc
   public write_grib2_2d
+  public write_grib2_3d
   public nf90_err
 
 contains
@@ -637,8 +638,8 @@ contains
    
        listsec1(1) = 7                 ! Originating Centre (Common Code Table C-1)
        listsec1(2) = 4                 ! Originating Sub-centre (local table) EMC=4
-       listsec1(3) = 0                 ! GRIB Master Tables Version Number (Code Table 1.0)
-!       listsec1(3) = g2d(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
+!       listsec1(3) = 2                 ! GRIB Master Tables Version Number (Code Table 1.0)
+       listsec1(3) = g2d(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
        listsec1(4) = 1                 ! GRIB Local Tables Version Number (Code Table 1.1)
        listsec1(5) = 1                 ! Significance of Reference Time (Code Table 1.2)
        listsec1(6) = ref_time(1)       ! Reference Time - Year -4digits
@@ -800,9 +801,6 @@ contains
        end if
    end do
   end subroutine getlun
-
-
-
 
 
   !--------------------------------------------------------------------------------------
