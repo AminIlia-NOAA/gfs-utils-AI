@@ -40,7 +40,7 @@ module utils_mod
   public remap
   public dumpnc
   public write_grib2_2d
-  public write_grib2_3d
+!  public write_grib2_3d
   public nf90_err
 
 contains
