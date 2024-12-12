@@ -613,6 +613,7 @@ contains
        integer :: numcoord, ibmap
        real(4) :: coordlist
        integer :: n, lon0, lon1, lat0, lat1
+       integer :: ideflist, idefnum
        logical :: bmp(dims(1)*dims(2)) 
 
        npt = dims(1) * dims(2)
@@ -706,6 +707,9 @@ contains
           write(logunit, *) 'Error initializing GRIB2 message', ierr
           return
        end if
+
+       ideflist=0
+       idefnum=0
 
        do n=1,nflds
 
