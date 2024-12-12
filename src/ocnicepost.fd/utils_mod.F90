@@ -613,14 +613,7 @@ contains
        integer :: numcoord, ibmap
        real(4) :: coordlist
        integer :: n, lon0, lon1, lat0, lat1
- 
-       integer :: ideflist,idefnum
        logical :: bmp(dims(1)*dims(2)) 
-       integer :: bsf, nbits
-       real    :: ref_val,Range
-
-       idefnum = 0
-       ideflist=0       !Used if igds(3) .ne. 0. Dummy array otherwise
 
        npt = dims(1) * dims(2)
    
@@ -667,21 +660,6 @@ contains
        lat0 = -90000000
        lat1 = 90000000
 
-       ! Populate the jgdt array for Template 3.0 (this seems to be wrong format)
-!       jgdt(1) = dims(2)              ! Number of latitude points
-!       jgdt(2) = dims(1)              ! Number of longitude points
-!       jgdt(3) = lat0                 ! Latitude of first grid point (microdegrees)
-!       jgdt(4) = lon0                 ! Longitude of first grid point (microdegrees)
-!       jgdt(5) = 0                    ! Resolution and component flags
-!       jgdt(6) = lat1                 ! Latitude of last grid point (microdegrees)
-!       jgdt(7) = lon1                 ! Longitude of last grid point (microdegrees)
-!       jgdt(8) = dij                  ! Grid increment in longitude direction (microdegrees)
-!       jgdt(9) = dij                  ! Grid increment in latitude direction (microdegrees)
-!       jgdt(10) = 0                   ! Scanning mode (0 for default)
-!       ! Remaining values are reserved or unused for Template 3.0
-!       jgdt(11:19) = 0
-
-
        ! Populate the jgdt array for Template 3.0 (changed parameters to current grib2 files)
        jgdt(1) = 6              
        jgdt(2) = 0              
@@ -723,8 +701,6 @@ contains
        write(logunit, *) 'forcast time: ', fortime
        write(logunit, *) 'refference time: ', ref_time
 
-
-
        call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr) 
        if (ierr /= 0) then
           write(logunit, *) 'Error initializing GRIB2 message', ierr
@@ -735,7 +711,7 @@ contains
 
          write(logunit, *) 'n, nflds, npt: ', n, nflds, npt
 
-         call addgrid(cgrib, max_bytes, igds, jgdt, 100, ideflist, idefnum, ierr) ! there is an internal error here 
+         call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ideflist, idefnum, ierr) ! there is an internal error here 
          if (ierr /= 0) then
              write(logunit, *) 'Error adding grid to GRIB2 message', ierr
              return
@@ -775,7 +751,7 @@ contains
          idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
          idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
          idrtmpl(3) = 2             ! Decimal scale factor (scale by 10^D)
-         idrtmpl(4) = 16             ! Number of bits for each packed value
+         idrtmpl(4) = 0             ! Number of bits for each packed value
          idrtmpl(5) = 0             ! Type of original field values (0 = floating point)
          ! Reserved fields for Template 5.0
          idrtmpl(6:11) = 0          ! Reserved for future use
@@ -783,7 +759,7 @@ contains
          idrtlen=size(idrtmpl)
 
          call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
-         idrtnum, idrtmpl, 100, field(:,n), npt, ibmap, bmp, ierr)
+         idrtnum, idrtmpl, idrtlen, field(:,n), npt, ibmap, bmp, ierr)
          if (ierr /= 0) then
              write(logunit, *) 'Error adding field to GRIB2 message', ierr
              return
