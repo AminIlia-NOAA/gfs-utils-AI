@@ -634,10 +634,10 @@ contains
        listsec0(2) = 2                 ! GRIB Edition Number (currently 2)
    
        listsec1(1) = 7                 ! Originating Centre (Common Code Table C-1)
-       listsec1(2) = 4                 ! Originating Sub-centre (local table) EMC=4
-       listsec1(3) = 33                 ! GRIB Master Tables Version Number (Code Table 1.0)
+       listsec1(2) = 3                 ! Originating Sub-centre (local table) EMC=4
+       listsec1(3) = 32                 ! GRIB Master Tables Version Number (Code Table 1.0)
 !       listsec1(3) = g2d(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
-       listsec1(4) = 0                 ! GRIB Local Tables Version Number (Code Table 1.1)
+       listsec1(4) = 1                 ! GRIB Local Tables Version Number (Code Table 1.1)
        listsec1(5) = 1                 ! Significance of Reference Time (Code Table 1.2)
        listsec1(6) = ref_time(1)       ! Reference Time - Year -4digits
        listsec1(7) = ref_time(2)       ! Reference Time - Month
