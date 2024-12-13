@@ -634,8 +634,8 @@ contains
        listsec0(2) = 2                 ! GRIB Edition Number (currently 2)
    
        listsec1(1) = 7                 ! Originating Centre (Common Code Table C-1)
-       listsec1(2) = 3                 ! Originating Sub-centre (local table) EMC=4
-       listsec1(3) = 32                 ! GRIB Master Tables Version Number (Code Table 1.0)
+       listsec1(2) = 4                 ! Originating Sub-centre (local table) EMC=4
+       listsec1(3) = 32                 ! GRIB Master Tables Version Number (Code Table 1.0)-last one currently 32
 !       listsec1(3) = g2d(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
        listsec1(4) = 1                 ! GRIB Local Tables Version Number (Code Table 1.1)
        listsec1(5) = 1                 ! Significance of Reference Time (Code Table 1.2)
@@ -735,8 +735,8 @@ contains
          jpdt(1)=g2d(n)%var_g5  ! cat number
          jpdt(2)=g2d(n)%var_g6  ! parm number
          jpdt(3)=2              ! (0-analysis, 1-initialazation, 2-forecast, .. GRIB2 - CODE TABLE 4.3 )
-         jpdt(4)=0              !   
-         jpdt(5)=0              ! 
+         jpdt(4)=1              !   1: Forecast initialized from an earlier analysis
+         jpdt(5)=0              ! Code ON388 Table A- no ice /ocean GFS
          jpdt(6)=1              !    unit (Hour=1)         
          jpdt(7)=fortime        ! forecast hour
          jpdt(8)=g2d(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level,  168-Ocean Model Layer,...)
@@ -757,7 +757,7 @@ contains
          bmp=.true.
 
          ! Assign Template 5
-         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
+         idrtnum = 2                            ! Template 5.0 (Grid Point Data - Simple Packing)
 
          ! Populate idrtmpl for Template 5.0
          idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
