@@ -788,8 +788,6 @@ contains
        end do
 
        call baclose(lunout, ierr)
-     
-       deallocate(cgrib)
 
        return
 
