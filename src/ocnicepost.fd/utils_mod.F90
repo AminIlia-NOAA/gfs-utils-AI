@@ -713,6 +713,8 @@ contains
 
        do n=1,nflds
 
+         allocate(cgrib(max_bytes)) ! allocate
+
          listsec0(1) = g2d(n)%var_g1
 
          call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr) 
@@ -777,14 +779,20 @@ contains
              return
          end if
 
+
+         call gribend(cgrib,max_bytes,lengrib,ierr)
+         write(logunit, *) 'gribend status=',ierr
+         write(logunit, *) 'length of the final GRIB2 message in octets =',lengrib
+         call wryte(lunout, lengrib, cgrib)
+
+         deallocate(cgrib)
+      
       end do
 
-      call gribend(cgrib,max_bytes,lengrib,ierr)
-      write(logunit, *) 'gribend status=',ierr
-      write(logunit, *) 'length of the final GRIB2 message in octets =',lengrib
-      call wryte(lunout, lengrib, cgrib)
+      baclose(lunout, ierr)
      
       deallocate(cgrib)
+      
       return
 
   end subroutine write_grib2_2d
