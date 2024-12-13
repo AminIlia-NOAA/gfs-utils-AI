@@ -608,7 +608,7 @@ contains
        integer :: listsec0(2), listsec1(13)
        integer :: igdtnum, ipdtnum, idrtnum
        integer :: igdtlen, ipdtlen, idrtlen
-       integer :: jgdt(19), jpdt(15), idrtmpl(11)
+       integer :: jgdt(19), jpdt(15), idrtmpl(5)
        integer(4) :: igds(5)
        integer :: numcoord, ibmap
        real(4) :: coordlist
@@ -636,7 +636,7 @@ contains
        listsec0(2) = 2                 ! GRIB Edition Number (currently 2)
    
        listsec1(1) = 7                 ! Originating Centre (Common Code Table C-1)
-       listsec1(2) = 4                 ! Originating Sub-centre (local table) EMC=4
+       listsec1(2) = 0                 ! Originating Sub-centre (local table) EMC=4
        listsec1(3) = 0                 ! GRIB Master Tables Version Number (Code Table 1.0)
 !       listsec1(3) = g2d(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
        listsec1(4) = 1                 ! GRIB Local Tables Version Number (Code Table 1.1)
@@ -749,7 +749,7 @@ contains
          bmp=.true.
 
          ! Assign Template 5
-         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
+         idrtnum = 40                            ! Template 5.0 (Grid Point Data - Simple Packing)
 
          ! Populate idrtmpl for Template 5.0
          idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
@@ -758,7 +758,7 @@ contains
          idrtmpl(4) = 0             ! Number of bits for each packed value
          idrtmpl(5) = 0             ! Type of original field values (0 = floating point)
          ! Reserved fields for Template 5.0
-         idrtmpl(6:11) = 0          ! Reserved for future use
+!         idrtmpl(6:11) = 0          ! Reserved for future use
 
          idrtlen=size(idrtmpl)
 
