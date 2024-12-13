@@ -608,7 +608,7 @@ contains
        integer :: listsec0(2), listsec1(13)
        integer :: igdtnum, ipdtnum, idrtnum
        integer :: igdtlen, ipdtlen, idrtlen
-       integer :: jgdt(19), jpdt(15), idrtmpl(5)
+       integer :: jgdt(19), jpdt(15), idrtmpl(16)
        integer(4) :: igds(5)
        integer :: numcoord, ibmap
        real(4) :: coordlist
@@ -766,7 +766,7 @@ contains
          idrtmpl(4) = 0             ! Number of bits for each packed value
          idrtmpl(5) = 0             ! Type of original field values (0 = floating point)
          ! Reserved fields for Template 5.0
-!         idrtmpl(6:11) = 0          ! Reserved for future use
+         idrtmpl(6:16) = 0          ! Reserved for future use
 
          idrtlen=size(idrtmpl)
 
