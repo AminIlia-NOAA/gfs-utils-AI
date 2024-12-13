@@ -702,11 +702,11 @@ contains
        write(logunit, *) 'forcast time: ', fortime
        write(logunit, *) 'refference time: ', ref_time
 
-       call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr) 
-       if (ierr /= 0) then
-          write(logunit, *) 'Error initializing GRIB2 message', ierr
-          return
-       end if
+!       call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr) 
+!       if (ierr /= 0) then
+!          write(logunit, *) 'Error initializing GRIB2 message', ierr
+!          return
+!       end if
 
        ideflist=0
        idefnum=0
@@ -787,13 +787,13 @@ contains
 
          deallocate(cgrib)
       
-      end do
+       end do
 
-      baclose(lunout, ierr)
+       call baclose(lunout, ierr)
      
-      deallocate(cgrib)
-      
-      return
+       deallocate(cgrib)
+
+       return
 
   end subroutine write_grib2_2d
 
