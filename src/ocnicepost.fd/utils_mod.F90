@@ -588,12 +588,12 @@ contains
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !-----------------------------------------------------------------------------------
 
-  subroutine write_grib2_2d(fname, g2d, dims, nflds, field)
+  subroutine write_grib2_2d(fname, gcf, dims, nflds, field)
    
        implicit none
    
        character(len=*), intent(in) :: fname
-       type(vardefs), allocatable, dimension(:) :: g2d  
+       type(vardefs), allocatable, dimension(:) :: gcf  
        integer,          intent(in) :: dims(2)
        integer,          intent(in) :: nflds
        real,             intent(in) :: field(dims(1)*dims(2),nflds)
@@ -631,13 +631,13 @@ contains
        call retrieve_time( fortime , ref_time )
 
        ! Initialize GRIB2 message sections
-       listsec0(1) = g2d(1)%var_g1     ! Discipline - GRIB Master Table Number (Code Table 0.0)
+       listsec0(1) = gcf(1)%var_g1     ! Discipline - GRIB Master Table Number (Code Table 0.0)
        listsec0(2) = 2                 ! GRIB Edition Number (currently 2)
    
-       listsec1(1) = g2d(1)%var_g3     ! Originating Centre (Common Code Table C-1)
+       listsec1(1) = gcf(1)%var_g3     ! Originating Centre (Common Code Table C-1)
        listsec1(2) = 4                 ! Originating Sub-centre (local table) EMC=4
        listsec1(3) = 32                 ! GRIB Master Tables Version Number (Code Table 1.0)-last one currently 32
-!       listsec1(3) = g2d(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
+!       listsec1(3) = gcf(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
        listsec1(4) = 1                 ! GRIB Local Tables Version Number (Code Table 1.1)
        listsec1(5) = 1                 ! Significance of Reference Time (Code Table 1.2)
        listsec1(6) = ref_time(1)       ! Reference Time - Year -4digits
@@ -709,7 +709,7 @@ contains
 
          allocate(cgrib(max_bytes))
 
-         listsec0(1) = g2d(n)%var_g1
+         listsec0(1) = gcf(n)%var_g1
 
          call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr) 
          if (ierr /= 0) then
@@ -728,14 +728,14 @@ contains
 !        Create Section 4 parametrs    
          ipdtnum=0
 
-         jpdt(1)=g2d(n)%var_g5  ! cat number
-         jpdt(2)=g2d(n)%var_g6  ! parm number
+         jpdt(1)=gcf(n)%var_g5  ! cat number
+         jpdt(2)=gcf(n)%var_g6  ! parm number
          jpdt(3)=2              ! (0-analysis, 1-initialazation, 2-forecast, .. GRIB2 - CODE TABLE 4.3 )
          jpdt(4)=1              !   1: Forecast initialized from an earlier analysis
          jpdt(5)=0              ! Code ON388 Table A- no ice /ocean GFS
          jpdt(6)=1              !    unit (Hour=1)    6hour=11     (ask later) Table 4.4
          jpdt(7)=fortime        ! forecast hour
-         jpdt(8)=g2d(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level,  168-Ocean Model Layer,...)
+         jpdt(8)=gcf(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level,  168-Ocean Model Layer,...)
          jpdt(9)=0              ! level value
          jpdt(10)=255
          jpdt(12)=0             ! 
@@ -797,12 +797,12 @@ contains
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !-----------------------------------------------------------------------------------
 
-  subroutine write_grib2_3d(fname, b3d, dims, nflds, field)
+  subroutine write_grib2_3d(fname, gcf, dims, nflds, field)
    
    implicit none
 
    character(len=*), intent(in) :: fname
-   type(vardefs), allocatable, dimension(:) :: b3d  
+   type(vardefs), allocatable, dimension(:) :: gcf  
    integer,          intent(in) :: dims(3)
    integer,          intent(in) :: nflds
    real,             intent(in) :: field( dims(1) * dims(2) , dims(3) , nflds )
@@ -844,13 +844,13 @@ contains
    call retrieve_time( fortime , ref_time )
 
    ! Initialize GRIB2 message sections
-   listsec0(1) = g2d(1)%var_g1     ! Discipline - GRIB Master Table Number (Code Table 0.0)
+   listsec0(1) = gcf(1)%var_g1     ! Discipline - GRIB Master Table Number (Code Table 0.0)
    listsec0(2) = 2                 ! GRIB Edition Number (currently 2)
 
-   listsec1(1) = g2d(1)%var_g3     ! Originating Centre (Common Code Table C-1)
+   listsec1(1) = gcf(1)%var_g3     ! Originating Centre (Common Code Table C-1)
    listsec1(2) = 4                 ! Originating Sub-centre (local table) EMC=4
    listsec1(3) = 32                 ! GRIB Master Tables Version Number (Code Table 1.0)-last one currently 32
-!       listsec1(3) = g2d(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
+!       listsec1(3) = gcf(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
    listsec1(4) = 1                 ! GRIB Local Tables Version Number (Code Table 1.1)
    listsec1(5) = 1                 ! Significance of Reference Time (Code Table 1.2)
    listsec1(6) = ref_time(1)       ! Reference Time - Year -4digits
@@ -862,12 +862,12 @@ contains
    listsec1(12) = 0                ! Production status of data (Code Table 1.3)
    listsec1(13) = 1                ! Type of processed data (Code Table 1.4)
 
-   dep1=(5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155,&
+   dep1=(/ 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155,&
     165, 175, 185, 195, 205, 215, 226, 241, 267, 309, 374, 467, 594, 757, 960,&
-     1204, 1490, 1817, 2184, 2587, 3024, 3489, 3977, 4481)
+     1204, 1490, 1817, 2184, 2587, 3024, 3489, 3977, 4481 /)
 
-   dep2=(5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155,&
-    165, 175, 185, 195, 205, 215, 226, 241, 267, 309, 374, 467)
+   dep2=(/ 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155,&
+    165, 175, 185, 195, 205, 215, 226, 241, 267, 309, 374, 467 /)
 
    if (dims(1) == 1440 .and. dims(2) == 721) then   ! 1/4deg rectilinear
       dij = 250000
@@ -949,7 +949,7 @@ contains
 
      allocate(cgrib(max_bytes))
 
-     listsec0(1) = g2d(n)%var_g1
+     listsec0(1) = gcf(n)%var_g1
 
      call gribcreate(cgrib, max_bytes, listsec0, listsec1, ierr) 
      if (ierr /= 0) then
@@ -968,14 +968,14 @@ contains
 !        Create Section 4 parametrs    
      ipdtnum=0
 
-     jpdt(1)=g2d(n)%var_g5  ! cat number
-     jpdt(2)=g2d(n)%var_g6  ! parm number
+     jpdt(1)=gcf(n)%var_g5  ! cat number
+     jpdt(2)=gcf(n)%var_g6  ! parm number
      jpdt(3)=2              ! (0-analysis, 1-initialazation, 2-forecast, .. GRIB2 - CODE TABLE 4.3 )
      jpdt(4)=1              !   1: Forecast initialized from an earlier analysis
      jpdt(5)=0              ! Code ON388 Table A- no ice /ocean GFS
      jpdt(6)=1              !    unit (Hour=1)    6hour=11     (ask later) Table 4.4
      jpdt(7)=fortime        ! forecast hour
-     jpdt(8)=g2d(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level,  168-Ocean Model Layer,...)
+     jpdt(8)=gcf(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level,  168-Ocean Model Layer,...)
      jpdt(9)=dep(lyr)       ! level value
      jpdt(10)=255
      jpdt(12)=0
@@ -1107,4 +1107,5 @@ end subroutine write_grib2_3d
       stop 99
     end if
   end subroutine nf90_err
+  
 end module utils_mod
