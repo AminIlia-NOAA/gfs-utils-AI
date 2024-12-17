@@ -403,11 +403,11 @@ program ocnicepost
 
    call write_grib2_2d(gout, g2d, (/nxr,nyr/), nconsd2d+nbilin2d, grib2d)
 
-!   if (allocated(rgb3d)) then
-!      gout = trim(ftype)//'.'//trim(fdst)//'_3D.gb2'
-!      call write_grib2_3d(gout, b3d, (/nxr,nyr,nlevs/), nbilin3d, rgb3d)
-!      if (debug) write(logunit, '(a)')'GRIB2 3D output file: '//trim(gout)
-!   end if
+   if (allocated(rgb3d)) then
+      gout = trim(ftype)//'.'//trim(fdst)//'_3D.gb2'
+      call write_grib2_3d(gout, b3d, (/nxr,nyr,nlevs/), nbilin3d, rgb3d)
+      if (debug) write(logunit, '(a)')'GRIB2 3D output file: '//trim(gout)
+   end if
   end if
 
   stop
