@@ -34,7 +34,6 @@ program ocnicepost
   use masking_mod, only : mask2d, mask3d, rgmask2d, rgmask3d, remap_masks
   use utils_mod  , only : getfield, packarrays, remap, dumpnc, nf90_err, write_grib2_2d, write_grib2_3d
 
-
   implicit none
 
   character(len=120) :: wgtsfile
@@ -54,7 +53,6 @@ program ocnicepost
   ! arrays for output grib2
   real, allocatable, dimension(:,:)   :: grib2d    !< 2D destination grib2 concat array
   type(vardefs), allocatable, dimension(:) :: g2d  !< concatinated variable metadata for 2D source fields remap
-
 
   real(kind=8)       :: timestamp
   character(len= 40) :: timeunit, timecal
