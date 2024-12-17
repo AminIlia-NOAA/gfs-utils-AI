@@ -32,7 +32,7 @@ program ocnicepost
   use arrays_mod , only : b2d, c2d, b3d, rgb2d, rgc2d, rgb3d, dstlon, dstlat, setup_packing
   use arrays_mod , only : nbilin2d, nbilin3d, nconsd2d, bilin2d, bilin3d, consd2d
   use masking_mod, only : mask2d, mask3d, rgmask2d, rgmask3d, remap_masks
-  use utils_mod  , only : getfield, packarrays, remap, dumpnc, nf90_err, write_grib2_2d
+  use utils_mod  , only : getfield, packarrays, remap, dumpnc, nf90_err, write_grib2_2d, write_grib2_3d
 
 
   implicit none
