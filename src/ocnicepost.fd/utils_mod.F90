@@ -635,7 +635,7 @@ contains
        listsec0(2) = 2                 ! GRIB Edition Number (currently 2)
    
        listsec1(1) = gcf(1)%var_g3     ! Originating Centre (Common Code Table C-1)
-       listsec1(2) = 4                 ! Originating Sub-centre (local table) EMC=4
+       listsec1(2) = 0                 ! Originating Sub-centre (local table) EMC=4
        listsec1(3) = 32                 ! GRIB Master Tables Version Number (Code Table 1.0)-last one currently 32
 !       listsec1(3) = gcf(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
        listsec1(4) = 1                 ! GRIB Local Tables Version Number (Code Table 1.1)
@@ -679,7 +679,7 @@ contains
        jgdt(16) = lon1
        jgdt(17) = dij
        jgdt(18) = dij
-       jgdt(19) = 0  !64
+       jgdt(19) = 0  
 
        igdtnum=0
        ! Define igds GRIB2 - SECTION 3
@@ -753,18 +753,20 @@ contains
          ibmap=255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
          bmp=.true.
 
-         ! Assign Template 5
-         idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
-!         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
 
-         ! Populate idrtmpl 
+     ! Assign Template 5
+!     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+         idrtnum = 40                            ! Template 5.40 (Grid Point Data - Simple Packing Jpegg)
+
+         idrtmpl=0
+         ! Populate idrtmpl
          idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
          idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
          idrtmpl(3) = 3             ! Decimal scale factor (scale by 10^D)
-         idrtmpl(4) = 0             ! Number of bits for each packed value
-         idrtmpl(5) = 0             ! Type of original field values (0 = floating point)
-         ! Reserved fields 
-         idrtmpl(6:16) = 0          ! Reserved for future use (for complex)
+         idrtmpl(4) = 0             !
+         idrtmpl(5) = 0             ! 
+         ! Reserved fields
+    !     idrtmpl(6:16) = 0          ! Reserved for future use (for complex)
 
          idrtlen=size(idrtmpl)
 
@@ -910,7 +912,7 @@ contains
    jgdt(8) = dims(1)
    jgdt(9) = dims(2)
    jgdt(10) = 0
-   jgdt(11) = -1   !-1
+   jgdt(11) = -1   
    jgdt(12) = lat0
    jgdt(13) = lon0
    jgdt(14) = 48   !0
@@ -995,17 +997,18 @@ contains
      bmp=.true.
 
      ! Assign Template 5
-     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
-!         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
+!     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+     idrtnum = 40                            ! Template 5.40 (Grid Point Data - Simple Packing Jpegg)
 
+     idrtmpl=0
      ! Populate idrtmpl
      idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
      idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
      idrtmpl(3) = 3             ! Decimal scale factor (scale by 10^D)
-     idrtmpl(4) = 0             ! Number of bits for each packed value
-     idrtmpl(5) = 0             ! Type of original field values (0 = floating point)
+     idrtmpl(4) = 0             !
+     idrtmpl(5) = 0             ! 
      ! Reserved fields
-     idrtmpl(6:16) = 0          ! Reserved for future use (for complex)
+!     idrtmpl(6:16) = 0          ! Reserved for future use (for complex)
 
      idrtlen=size(idrtmpl)
 
