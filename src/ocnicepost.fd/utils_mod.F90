@@ -609,7 +609,7 @@ contains
        integer :: listsec0(2), listsec1(13)
        integer :: igdtnum, ipdtnum, idrtnum
        integer :: igdtlen, ipdtlen, idrtlen
-       integer :: jgdt(19), jpdt(15), idrtmpl(5)
+       integer :: jgdt(19), jpdt(15), idrtmpl(6)
        integer(4) :: igds(5)
        integer :: numcoord, ibmap
        real(4) :: coordlist
@@ -762,6 +762,7 @@ contains
          idrtmpl(3) = 3             ! Decimal scale factor (scale by 10^D)
          idrtmpl(4) = 0             ! Number of bits for each packed value
          idrtmpl(5) = 0             ! Type of original field values (0 = floating point)
+         idrtmpl(6) = 0             ! 
          ! Reserved fields
     !     idrtmpl(6:16) = 0          ! Reserved for future use (for complex)
 
@@ -818,7 +819,7 @@ contains
    integer :: listsec0(2), listsec1(13)
    integer :: igdtnum, ipdtnum, idrtnum
    integer :: igdtlen, ipdtlen, idrtlen
-   integer :: jgdt(19), jpdt(15), idrtmpl(5)
+   integer :: jgdt(19), jpdt(15), idrtmpl(6)
    integer(4) :: igds(5)
    integer :: numcoord, ibmap
    real(4) :: coordlist
@@ -1002,6 +1003,7 @@ contains
      idrtmpl(3) = 3             ! Decimal scale factor (scale by 10^D)
      idrtmpl(4) = 0             ! Number of bits for each packed value
      idrtmpl(5) = 0             ! Type of original field values (0 = floating point)
+     idrtmpl(6) = 0             ! 
      ! Reserved fields
 !     idrtmpl(6:16) = 0          ! Reserved for future use (for complex)
 
