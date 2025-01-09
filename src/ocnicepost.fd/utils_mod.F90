@@ -609,7 +609,7 @@ contains
        integer :: listsec0(2), listsec1(13)
        integer :: igdtnum, ipdtnum, idrtnum
        integer :: igdtlen, ipdtlen, idrtlen
-       integer :: jgdt(19), jpdt(15), idrtmpl(15)
+       integer :: jgdt(19), jpdt(15), idrtmpl(16)
        integer(4) :: igds(5)
        integer :: numcoord, ibmap
        real(4) :: coordlist
@@ -755,9 +755,9 @@ contains
 
 
          ! Assign Template 5
-         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
+!         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
          !     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
-         !     idrtnum = 40                            ! Template 5.40 (Grid Point Data - Simple Packing Jpegg)
+         idrtnum = 40                            ! Template 5.40 (Grid Point Data - Simple Packing Jpegg)
          
          idrtmpl=0
          ! Populate idrtmpl
@@ -822,7 +822,7 @@ contains
    integer :: listsec0(2), listsec1(13)
    integer :: igdtnum, ipdtnum, idrtnum
    integer :: igdtlen, ipdtlen, idrtlen
-   integer :: jgdt(19), jpdt(15), idrtmpl(5)
+   integer :: jgdt(19), jpdt(15), idrtmpl(16)
    integer(4) :: igds(5)
    integer :: numcoord, ibmap
    real(4) :: coordlist
@@ -999,9 +999,9 @@ contains
      bmp=.true.
 
      ! Assign Template 5
-     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
+!     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
 !     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
-!     idrtnum = 40                            ! Template 5.40 (Grid Point Data - Simple Packing Jpegg)
+     idrtnum = 40                            ! Template 5.40 (Grid Point Data - Simple Packing Jpegg)
 
      idrtmpl=0
      ! Populate idrtmpl
