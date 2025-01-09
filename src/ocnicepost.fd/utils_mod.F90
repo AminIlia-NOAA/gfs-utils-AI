@@ -997,8 +997,8 @@ contains
      bmp=.true.
 
      ! Assign Template 5
-     idrtnum = 0                            ! Template 5.40 (Grid Point Data - Simple Packing)
-!     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+!     idrtnum = 0                            ! Template 5.40 (Grid Point Data - Simple Packing)
+     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
 !     idrtnum = 40                            ! Template 5.40 (Grid Point Data - Simple Packing Jpegg)
 
      idrtmpl=0
