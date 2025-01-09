@@ -609,7 +609,7 @@ contains
        integer :: listsec0(2), listsec1(13)
        integer :: igdtnum, ipdtnum, idrtnum
        integer :: igdtlen, ipdtlen, idrtlen
-       integer :: jgdt(19), jpdt(15), idrtmpl(16)
+       integer :: jgdt(19), jpdt(15), idrtmpl(5)
        integer(4) :: igds(5)
        integer :: numcoord, ibmap
        real(4) :: coordlist
@@ -822,7 +822,7 @@ contains
    integer :: listsec0(2), listsec1(13)
    integer :: igdtnum, ipdtnum, idrtnum
    integer :: igdtlen, ipdtlen, idrtlen
-   integer :: jgdt(19), jpdt(15), idrtmpl(16)
+   integer :: jgdt(19), jpdt(15), idrtmpl(5)
    integer(4) :: igds(5)
    integer :: numcoord, ibmap
    real(4) :: coordlist
