@@ -609,7 +609,7 @@ contains
        integer :: listsec0(2), listsec1(13)
        integer :: igdtnum, ipdtnum, idrtnum
        integer :: igdtlen, ipdtlen, idrtlen
-       integer :: jgdt(19), jpdt(15), idrtmpl(5)
+       integer :: jgdt(19), jpdt(15), idrtmpl(15)
        integer(4) :: igds(5)
        integer :: numcoord, ibmap
        real(4) :: coordlist
@@ -728,21 +728,21 @@ contains
 !        Create Section 4 parametrs    
          ipdtnum=0
 
-         jpdt(1)=gcf(n)%var_g1  ! Dissipline 
-         jpdt(2)=gcf(n)%var_g5  ! parm number catagory
-         jpdt(3)=gcf(n)%var_g6  ! parm number
-         jpdt(4)=2              ! (0-analysis, 1-initialazation, 2-forecast, .. GRIB2 - CODE TABLE 4.3 )
-         jpdt(5)=0              ! 1: Forecast initialized from an earlier analysis
-         jpdt(6)=96             ! Code ON388 Table A- GFS
-         jpdt(7)=1              ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
-         jpdt(8)=fortime        ! forecast hour
-         jpdt(9)=gcf(n)%var_g8  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level, 168 Ocean Model Layer,...)
-         jpdt(10)=0             ! scale factor
-         jpdt(11)=0             ! scale value
-         jpdt(12)=255
+
+         jpdt(1)=gcf(n)%var_g5  ! parm number catagory
+         jpdt(2)=gcf(n)%var_g6  ! parm number
+         jpdt(3)=2              ! (0-analysis, 1-initialazation, 2-forecast, .. GRIB2 - CODE TABLE 4.3 )
+         jpdt(4)=0              ! 1: Forecast initialized from an earlier analysis
+         jpdt(5)=96             ! Code ON388 Table A- GFS
+         jpdt(6)=1              ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
+         jpdt(7)=fortime        ! forecast hour
+         jpdt(8)=gcf(n)%var_g8  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level, 168 Ocean Model Layer,...)
+         jpdt(9)=0             ! scale factor
+         jpdt(10)=0             ! scale value
+         jpdt(11)=255
+         jpdt(12)=0
          jpdt(13)=0
          jpdt(14)=0
-         jpdt(15)=0
 
          if (debug) write(logunit, *) 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:15)
 
@@ -972,18 +972,19 @@ contains
 !        Create Section 4 parametrs    
      ipdtnum=0
 
-     jpdt(1)=gcf(n)%var_g1  ! cat number
-     jpdt(2)=gcf(n)%var_g5  ! parm number catagory
-     jpdt(3)=gcf(n)%var_g6  ! parm number
-     jpdt(4)=2              ! (0-analysis, 1-initialazation, 2-forecast, .. GRIB2 - CODE TABLE 4.3 )
-     jpdt(5)=0              !   1: Forecast initialized from an earlier analysis
-     jpdt(6)=96              ! Code ON388 Table A- GFS
-     jpdt(7)=1              !    unit (Hour=1)    6hour=11     (ask later) Table 4.4
-     jpdt(8)=fortime        ! forecast hour
-     jpdt(9)=gcf(n)%var_g8  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
-     jpdt(10)=0             ! scale factor
-     jpdt(11)=dep(lyr)      ! scale value
-     jpdt(12)=255
+
+     jpdt(1)=gcf(n)%var_g5  ! parm number catagory
+     jpdt(2)=gcf(n)%var_g6  ! parm number
+     jpdt(3)=2              ! (0-analysis, 1-initialazation, 2-forecast, .. GRIB2 - CODE TABLE 4.3 )
+     jpdt(4)=0              !   1: Forecast initialized from an earlier analysis
+     jpdt(5)=96              ! Code ON388 Table A- GFS
+     jpdt(6)=1              !    unit (Hour=1)    6hour=11     (ask later) Table 4.4
+     jpdt(7)=fortime        ! forecast hour
+     jpdt(8)=gcf(n)%var_g8  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
+     jpdt(9)=0             ! scale factor
+     jpdt(10)=dep(lyr)      ! scale value
+     jpdt(11)=255
+     jpdt(12)=0
      jpdt(13)=0
      jpdt(14)=0
      jpdt(15)=0
