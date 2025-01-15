@@ -679,7 +679,7 @@ contains
        jgdt(16) = lon1
        jgdt(17) = dij
        jgdt(18) = dij
-       jgdt(19) = 1  
+       jgdt(19) = 010 
 
        igdtnum=0
        ! Define igds GRIB2 - SECTION 3
@@ -920,7 +920,7 @@ contains
    jgdt(16) = lon1
    jgdt(17) = dij
    jgdt(18) = dij
-   jgdt(19) = 1  !64
+   jgdt(19) = 010  !64
 
    igdtnum=0
    ! Define igds GRIB2 - SECTION 3
