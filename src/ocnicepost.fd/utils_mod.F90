@@ -674,12 +674,12 @@ contains
        jgdt(11) = -1   
        jgdt(12) = lat0
        jgdt(13) = lon0
-       jgdt(14) = 48   !0
+       jgdt(14) = 24   !0
        jgdt(15) = lat1
        jgdt(16) = lon1
        jgdt(17) = dij
        jgdt(18) = dij
-       jgdt(19) = 010 
+       jgdt(19) = 64 
 
        igdtnum=0
        ! Define igds GRIB2 - SECTION 3
@@ -901,26 +901,26 @@ contains
    lat0 = -90000000
    lat1 = 90000000
 
-   ! Populate the jgdt array for Template 3.0 (changed parameters to current grib2 files)
-   jgdt(1) = 6
-   jgdt(2) = 0
-   jgdt(3) = 0
-   jgdt(4) = 0
-   jgdt(5) = 0
-   jgdt(6) = 0
-   jgdt(7) = 0
-   jgdt(8) = dims(1)
-   jgdt(9) = dims(2)
+       ! Populate the jgdt array for Template 3.0 (changed parameters to current grib2 files)
+   jgdt(1) = 6              
+   jgdt(2) = 0              
+   jgdt(3) = 0                
+   jgdt(4) = 0                 
+   jgdt(5) = 0                  
+   jgdt(6) = 0                
+   jgdt(7) = 0                 
+   jgdt(8) = dims(1)             
+   jgdt(9) = dims(2)        
    jgdt(10) = 0
    jgdt(11) = -1   
    jgdt(12) = lat0
    jgdt(13) = lon0
-   jgdt(14) = 48   !0
+   jgdt(14) = 24   
    jgdt(15) = lat1
    jgdt(16) = lon1
    jgdt(17) = dij
    jgdt(18) = dij
-   jgdt(19) = 010  !64
+   jgdt(19) = 64 
 
    igdtnum=0
    ! Define igds GRIB2 - SECTION 3
