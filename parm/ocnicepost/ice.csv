@@ -1,4 +1,4 @@
-! variable name, dimension, grid location, remapping method, vector pair, grid location of vector pair,gb2 varname,discription,unit,g1,g2,g3,g4,gc5,gc6,gc7,gc8
+! variable name, dimension, grid location, remapping method, vector pair, grid location of vector pair,gb2 varname,discription,unit,gc1,gc2,gc3,gc4,gc5,gc6,gc7,gc8
        'hi_h',2, 'Ct', 'bilinear', '', '', 'ICETK', 'Ice Thickness', 'm',10,2,7,0,2,1,1,0
        'hs_h',2, 'Ct', 'bilinear', '', '', 'SNVOLSI', 'Snow Volume Over Sea Ice per Unit Area', 'm3m-2',10,2,7,0,2,16,1,0
      'aice_h',2, 'Ct', 'bilinear', '', '', 'ICEC', 'Ice Cover', 'Proportion',10,2,7,0,2,0,1,0
