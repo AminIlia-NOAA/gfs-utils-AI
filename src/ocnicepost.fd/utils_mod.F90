@@ -717,7 +717,7 @@ contains
             return
          end if
 
-         write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, , gcf(n)%discription_gb2
+         write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, gcf(n)%discription_gb2
 
          call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ideflist, idefnum, ierr) ! there is an internal error here 
          if (ierr /= 0) then
