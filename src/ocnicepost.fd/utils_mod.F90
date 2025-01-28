@@ -717,7 +717,7 @@ contains
             return
          end if
 
-         write(logunit, *) 'n, nflds, npt: ', n, nflds, npt
+         write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, , gcf(n)%discription_gb2
 
          call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ideflist, idefnum, ierr) ! there is an internal error here 
          if (ierr /= 0) then
@@ -960,7 +960,7 @@ contains
         return
      end if
 
-     if (debug) write(logunit, *) 'n, nflds, npt, lay: ', n, nflds, npt, lyr
+     if (debug) write(logunit, *) 'n, nflds, npt, lay: ', n, nflds, npt, lyr, gcf(n)%discription_gb2
 
      call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ideflist, idefnum, ierr) ! there is an internal error here 
      if (ierr /= 0) then
@@ -1090,7 +1090,7 @@ end subroutine write_grib2_3d
       read(units_str(12:29), '(I4,1X,I2,1X,I2,1X,I2,1X,I2,1X,I2)') &       ! remove it once ice time unit changed
       ref_year, ref_month, ref_day, ref_hour, ref_min, ref_sec
      forecast_hour=24*forecast_hour ! remove it once ice time unit changed)
-
+   end if
 
    ref_time(1) = ref_year
    ref_time(2) = ref_month
