@@ -1,7 +1,7 @@
 module utils_mod
 
   use netcdf
-  use init_mod, only : debug, logunit, vardefs, fsrc, input_file
+  use init_mod, only : debug, logunit, vardefs, fsrc, input_file, ftype
 
   implicit none
 
@@ -636,8 +636,8 @@ contains
    
        listsec1(1) = gcf(1)%var_g3     ! Originating Centre (Common Code Table C-1)
        listsec1(2) = 0                 ! Originating Sub-centre (local table) EMC=4
-       listsec1(3) = 32                 ! GRIB Master Tables Version Number (Code Table 1.0)-last one currently 32
-!       listsec1(3) = gcf(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
+!       listsec1(3) = 32                 ! GRIB Master Tables Version Number (Code Table 1.0)-last one currently 32
+       listsec1(3) = gcf(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
        listsec1(4) = 1                 ! GRIB Local Tables Version Number (Code Table 1.1)
        listsec1(5) = 1                 ! Significance of Reference Time (Code Table 1.2)
        listsec1(6) = ref_time(1)       ! Reference Time - Year -4digits
@@ -671,10 +671,10 @@ contains
        jgdt(8) = dims(1)             
        jgdt(9) = dims(2)        
        jgdt(10) = 0
-       jgdt(11) = -1   
+       jgdt(11) = 1000000   
        jgdt(12) = lat0
        jgdt(13) = lon0
-       jgdt(14) = 24   !0
+       jgdt(14) = 48   !0
        jgdt(15) = lat1
        jgdt(16) = lon1
        jgdt(17) = dij
@@ -737,7 +737,7 @@ contains
          jpdt(6)=1              ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
          jpdt(7)=fortime        ! forecast hour
          jpdt(8)=gcf(n)%var_g8  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level, 168 Ocean Model Layer,...)
-         jpdt(9)=0             ! scale factor
+         jpdt(9)=0              ! scale factor
          jpdt(10)=0             ! scale value
          jpdt(11)=255
          jpdt(12)=0
@@ -762,7 +762,7 @@ contains
          ! Populate idrtmpl
          idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
          idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
-         idrtmpl(3) = 2             ! Decimal scale factor (scale by 10^D)
+         idrtmpl(3) = 3             ! Decimal scale factor (scale by 10^D)
          idrtmpl(4) = 0             !
          idrtmpl(5) = 0             !
          ! Reserved fields
@@ -852,8 +852,8 @@ contains
 
    listsec1(1) = gcf(1)%var_g3     ! Originating Centre (Common Code Table C-1)
    listsec1(2) = 0                 ! Originating Sub-centre (local table) EMC=4
-   listsec1(3) = 32                 ! GRIB Master Tables Version Number (Code Table 1.0)-last one currently 32
-!       listsec1(3) = gcf(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
+!   listsec1(3) = 32                 ! GRIB Master Tables Version Number (Code Table 1.0)-last one currently 32
+   listsec1(3) = gcf(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
    listsec1(4) = 1                 ! GRIB Local Tables Version Number (Code Table 1.1)
    listsec1(5) = 1                 ! Significance of Reference Time (Code Table 1.2)
    listsec1(6) = ref_time(1)       ! Reference Time - Year -4digits
@@ -912,10 +912,10 @@ contains
    jgdt(8) = dims(1)             
    jgdt(9) = dims(2)        
    jgdt(10) = 0
-   jgdt(11) = -1   
+   jgdt(11) = 1000000   
    jgdt(12) = lat0
    jgdt(13) = lon0
-   jgdt(14) = 24   
+   jgdt(14) = 48   
    jgdt(15) = lat1
    jgdt(16) = lon1
    jgdt(17) = dij
@@ -1083,9 +1083,14 @@ end subroutine write_grib2_3d
    call nf90_err(nf90_get_var(ncid, time_varid, forecast_hour), 'get variable time')
    call nf90_err(nf90_get_att(ncid, time_varid, 'units', units_str), 'get attribute: units')
 
-   read(units_str(13:30), '(I4,1X,I2,1X,I2,1X,I2,1X,I2,1X,I2)') &           ! (12:29) for testing ice model (need to be changed request sent) - (13:30) is final and for testing the ocean model
+   if (trim(ftype) == 'ocean') then
+      read(units_str(13:30), '(I4,1X,I2,1X,I2,1X,I2,1X,I2,1X,I2)') &          
        ref_year, ref_month, ref_day, ref_hour, ref_min, ref_sec
-!   forecast_hour=24*forecast_hour ! just for testing ice model (remove it once ice time unit fixed)
+   else
+      read(units_str(12:29), '(I4,1X,I2,1X,I2,1X,I2,1X,I2,1X,I2)') &       ! remove it once ice time unit changed
+      ref_year, ref_month, ref_day, ref_hour, ref_min, ref_sec
+     forecast_hour=24*forecast_hour ! remove it once ice time unit changed)
+
 
    ref_time(1) = ref_year
    ref_time(2) = ref_month
