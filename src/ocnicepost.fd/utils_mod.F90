@@ -758,8 +758,8 @@ contains
 
 
          ! Assign Template 5
-!         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
-         idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
+!         idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
          
          idrtmpl=0
          ! Populate idrtmpl
@@ -775,6 +775,7 @@ contains
 
          where ( field(:,n) == gcf(n)%var_fillvalue ) field(:,n) = -9999.0
         
+         write(logunit, *) 'bmp: ', bmp
 
          call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
          idrtnum, idrtmpl, idrtlen, field(:,n), npt, ibmap, bmp, ierr)
@@ -1004,14 +1005,14 @@ contains
      bmp = (rgmask3d(:,lyr) == 1)
 
      ! Assign Template 5
-!     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
-     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
+!     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
 
      idrtmpl=0
      ! Populate idrtmpl
      idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
      idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
-     idrtmpl(3) = 3             ! Decimal scale factor (scale by 10^D)
+     idrtmpl(3) = 2             ! Decimal scale factor (scale by 10^D)
      idrtmpl(4) = 0             !
      idrtmpl(5) = 0             ! 
      ! Reserved fields
@@ -1020,6 +1021,8 @@ contains
      idrtlen=size(idrtmpl)
 
      where ( field(:,lyr,n) == gcf(n)%var_fillvalue ) field(:,n) = -9999.0
+
+     write(logunit, *) 'bmp: ', bmp
 
      call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
      idrtnum, idrtmpl, idrtlen, field(:,lyr,n), npt, ibmap, bmp, ierr)
