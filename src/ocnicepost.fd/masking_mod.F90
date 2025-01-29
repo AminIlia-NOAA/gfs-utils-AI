@@ -27,7 +27,7 @@ contains
     ! local variables
     integer            :: rc, ncid, varid, n
     character(len=240) :: wgtsfile
-    real               :: minlat = -78.63       
+    real               :: minlat = -78.00    ! This is masking Antarctica which is not in the weighting function
 
     real, allocatable, dimension(:) :: out1d
 

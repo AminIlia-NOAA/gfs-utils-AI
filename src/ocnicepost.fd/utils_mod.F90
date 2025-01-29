@@ -2,6 +2,7 @@ module utils_mod
 
   use netcdf
   use init_mod, only : debug, logunit, vardefs, fsrc, input_file, ftype
+  use masking_mod, only : rgmask2d, rgmask3d
 
   implicit none
 
@@ -717,7 +718,7 @@ contains
             return
          end if
 
-         write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, gcf(n)%discription_gb2
+         write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, gcf(n)%discription_gb2, gcf(n)%var_fillvalue
 
          call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ideflist, idefnum, ierr) ! there is an internal error here 
          if (ierr /= 0) then
@@ -750,8 +751,10 @@ contains
 
          numcoord=0
          coordlist=0.  ! needed for hybrid vertical coordinate
-         ibmap=255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
-         bmp=.true.
+
+
+         ibmap = 0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
+         bmp = (rgmask2d == 1)
 
 
          ! Assign Template 5
@@ -769,6 +772,9 @@ contains
     !     idrtmpl(6:16) = 0          ! Reserved for future use
 
          idrtlen=size(idrtmpl)
+
+         where ( field(:,n) == gcf(n)%var_fillvalue ) field(:,n) = -9999.0
+        
 
          call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
          idrtnum, idrtmpl, idrtlen, field(:,n), npt, ibmap, bmp, ierr)
@@ -960,7 +966,7 @@ contains
         return
      end if
 
-     if (debug) write(logunit, *) 'n, nflds, npt, lay: ', n, nflds, npt, lyr, gcf(n)%discription_gb2
+     if (debug) write(logunit, *) 'n, nflds, npt, lay: ', n, nflds, npt, lyr, gcf(n)%discription_gb2, gcf(n)%var_fillvalue
 
      call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ideflist, idefnum, ierr) ! there is an internal error here 
      if (ierr /= 0) then
@@ -994,8 +1000,8 @@ contains
 
      numcoord=0
      coordlist=0.  ! needed for hybrid vertical coordinate
-     ibmap=255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
-     bmp=.true.
+     ibmap=0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
+     bmp = (rgmask3d(:,lyr) == 1)
 
      ! Assign Template 5
 !     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
@@ -1012,6 +1018,8 @@ contains
 !     idrtmpl(6:16) = 0          ! Reserved for future use 
 
      idrtlen=size(idrtmpl)
+
+     where ( field(:,lyr,n) == gcf(n)%var_fillvalue ) field(:,n) = -9999.0
 
      call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
      idrtnum, idrtmpl, idrtlen, field(:,lyr,n), npt, ibmap, bmp, ierr)
