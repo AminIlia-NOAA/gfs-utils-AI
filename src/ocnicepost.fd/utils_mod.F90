@@ -729,7 +729,7 @@ contains
          min_val = minval(field(:,n))
          mean_val = sum(field(:,n)) / size(field(:,n))
 
-         write(logunit, *) 'Variable_Name, max, min, mean: ', gcf(n)%var_name, max_val, min_val, mean_val
+         write(logunit, *) 'Variable_name, max, min, mean: ', gcf(n)%var_name, max_val, min_val, mean_val
 
          call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ideflist, idefnum, ierr) ! there is an internal error here 
          if (ierr /= 0) then
