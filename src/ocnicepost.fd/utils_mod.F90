@@ -759,7 +759,7 @@ contains
          jpdt(15)=0
          jpdt(16)=0
 
-         if (debug) write(logunit, *) 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:15)
+         if (debug) write(logunit, *) 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:16)
 
          ipdtlen=size(jpdt)
 
@@ -768,9 +768,9 @@ contains
 
 
          ibmap = 0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
-         bmp=.false.
-         where (rgmask2d == 1) bmp=.true.
-
+         bmp=.true.
+!         where (rgmask2d == 1) bmp=.true.
+!         bmp=.true.
 
          ! Assign Template 5
 !         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
@@ -780,7 +780,7 @@ contains
          ! Populate idrtmpl
          idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
          idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
-         idrtmpl(3) = 3             ! Decimal scale factor (scale by 10^D)
+         idrtmpl(3) = 2             ! Decimal scale factor (scale by 10^D)
          idrtmpl(4) = 0             !
          idrtmpl(5) = 0             !
          ! Reserved fields
@@ -788,7 +788,12 @@ contains
 
          idrtlen=size(idrtmpl)
 
-         where ( field(:,n) == gcf(n)%var_fillvalue ) field(:,n) = -9999.0
+
+         if (gcf(n)%var_name .eq. 'WTMP') field(:,n) = field(:,n) + 273.15
+
+         where ( field(:,n) < -9999 ) field(:,n) = -9999.0
+
+         where (field(:,n) .eq. -9999.0) bmp= .false.
         
          write(logunit, *) 'bmp: ', bmp
 
@@ -1001,6 +1006,8 @@ contains
      jpdt(4)=0              !   1: Forecast initialized from an earlier analysis
      jpdt(5)=96              ! Code ON388 Table A- GFS
      jpdt(6)=1              !    unit (Hour=1)    6hour=11     (ask later) Table 4.4
+     jpdt(7)=0      ! forecast hour
+     jpdt(8)=0      !
      jpdt(7)=fortime        ! forecast hour
      jpdt(8)=gcf(n)%var_g8  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
      jpdt(9)=0             ! scale factor
@@ -1010,6 +1017,7 @@ contains
      jpdt(13)=0
      jpdt(14)=0
      jpdt(15)=0
+     jpdt(16)=0
 
      if (debug) write(logunit, *) 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:15)
 
@@ -1018,8 +1026,7 @@ contains
      numcoord=0
      coordlist=0.  ! needed for hybrid vertical coordinate
      ibmap=0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
-     bmp=.false.
-     where (rgmask3d(:,lyr) == 1) bmp=.true.
+     bmp=.true.
 
      ! Assign Template 5
 !     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
@@ -1037,7 +1044,9 @@ contains
 
      idrtlen=size(idrtmpl)
 
-     where ( field(:,lyr,n) == gcf(n)%var_fillvalue ) field(:,lyr,n) = -9999.0
+     where ( field(:,lyr,n) < -9999 ) field(:,lyr,n) = -9999.0
+
+     where (field(:,lyr,n) .eq. -9999.0) bmp= .false.
 
      write(logunit, *) 'bmp: ', bmp
 
