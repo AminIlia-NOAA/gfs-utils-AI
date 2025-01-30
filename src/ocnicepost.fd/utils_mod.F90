@@ -769,7 +769,7 @@ contains
 
          ibmap = 0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
          bmp=.false.
-         bmp = (rgmask2d == 1)
+         where (rgmask2d == 1) bmp=.true.
 
 
          ! Assign Template 5
@@ -1019,7 +1019,7 @@ contains
      coordlist=0.  ! needed for hybrid vertical coordinate
      ibmap=0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
      bmp=.false.
-     bmp = (rgmask3d(:,lyr) == 1)
+     where (rgmask3d(:,lyr) == 1) bmp=.true.
 
      ! Assign Template 5
 !     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
