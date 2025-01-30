@@ -1033,7 +1033,7 @@ contains
 
      idrtlen=size(idrtmpl)
 
-     where ( field(:,lyr,n) == gcf(n)%var_fillvalue ) field(:,n) = -9999.0
+     where ( field(:,lyr,n) == gcf(n)%var_fillvalue ) field(:,lyr,n) = -9999.0
 
      write(logunit, *) 'bmp: ', bmp
 
