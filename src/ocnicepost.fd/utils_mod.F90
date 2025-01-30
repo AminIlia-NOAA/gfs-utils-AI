@@ -768,6 +768,7 @@ contains
 
 
          ibmap = 0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
+         bmp=.false.
          bmp = (rgmask2d == 1)
 
 
@@ -1017,6 +1018,7 @@ contains
      numcoord=0
      coordlist=0.  ! needed for hybrid vertical coordinate
      ibmap=0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
+     bmp=.false.
      bmp = (rgmask3d(:,lyr) == 1)
 
      ! Assign Template 5
