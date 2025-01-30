@@ -597,7 +597,7 @@ contains
        type(vardefs),    intent(in) :: gcf(:) 
        integer,          intent(in) :: dims(2)
        integer,          intent(in) :: nflds
-       real,             intent(in) :: field(dims(1)*dims(2),nflds)
+       real,             intent(inout) :: field(dims(1)*dims(2),nflds)
        real,             intent(in) :: rgmask2d(dims(1) * dims(2))
 
        ! internal variables
@@ -827,7 +827,7 @@ contains
    type(vardefs),    intent(in) :: gcf(:)
    integer,          intent(in) :: dims(3)
    integer,          intent(in) :: nflds
-   real,             intent(in) :: field( dims(1) * dims(2) , dims(3) , nflds )
+   real,             intent(inout) :: field( dims(1) * dims(2) , dims(3) , nflds )
    real,             intent(in) :: rgmask3d(dims(1) * dims(2) , dims(3))
 
    ! internal variables
