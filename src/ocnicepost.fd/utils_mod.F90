@@ -618,6 +618,10 @@ contains
        integer :: ideflist, idefnum
        logical :: bmp(dims(1)*dims(2)) 
 
+       real :: max_val, min_val, mean_val
+
+
+
        npt = dims(1) * dims(2)
    
        max_bytes = npt * 4  ! Estimated max bytes
@@ -719,6 +723,13 @@ contains
          end if
 
          write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, gcf(n)%discription_gb2, gcf(n)%var_fillvalue
+
+       ! Compute max, min, and mean
+         max_val = maxval(field(:,n))
+         min_val = minval(field(:,n))
+         mean_val = sum(field(:,n)) / size(field(:,n))
+
+         write(logunit, *) 'Variable_Name, max, min, mean: ', gcf(n)%var_name, max_val, min_val, mean_val
 
          call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ideflist, idefnum, ierr) ! there is an internal error here 
          if (ierr /= 0) then
