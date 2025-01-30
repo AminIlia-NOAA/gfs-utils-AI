@@ -2,7 +2,7 @@ module utils_mod
 
   use netcdf
   use init_mod, only : debug, logunit, vardefs, fsrc, input_file, ftype
-  use masking_mod, only : rgmask2d, rgmask3d
+
 
   implicit none
 
@@ -589,15 +589,16 @@ contains
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !-----------------------------------------------------------------------------------
 
-  subroutine write_grib2_2d(fname, gcf, dims, nflds, field)
+  subroutine write_grib2_2d(fname, gcf, dims, nflds, field, rgmask2d)
    
        implicit none
    
        character(len=*), intent(in) :: fname
-       type(vardefs), allocatable, dimension(:) :: gcf  
+       type(vardefs),    intent(in) :: gcf(:) 
        integer,          intent(in) :: dims(2)
        integer,          intent(in) :: nflds
        real,             intent(in) :: field(dims(1)*dims(2),nflds)
+       real,             intent(in) :: rgmask2d(dims(1) * dims(2))
 
        ! internal variables
        integer(4) :: max_bytes, lengrib
@@ -619,8 +620,6 @@ contains
        logical :: bmp(dims(1)*dims(2)) 
 
        real :: max_val, min_val, mean_val
-
-
 
        npt = dims(1) * dims(2)
    
@@ -722,7 +721,7 @@ contains
             return
          end if
 
-         write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, gcf(n)%discription_gb2, gcf(n)%var_fillvalue
+         write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, gcf(n)%var_name, gcf(n)
 
        ! Compute max, min, and mean
          max_val = maxval(field(:,n))
@@ -747,14 +746,16 @@ contains
          jpdt(4)=0              ! 1: Forecast initialized from an earlier analysis
          jpdt(5)=96             ! Code ON388 Table A- GFS
          jpdt(6)=1              ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
-         jpdt(7)=fortime        ! forecast hour
-         jpdt(8)=gcf(n)%var_g8  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level, 168 Ocean Model Layer,...)
-         jpdt(9)=0              ! scale factor
-         jpdt(10)=0             ! scale value
-         jpdt(11)=255
-         jpdt(12)=0
-         jpdt(13)=0
+         jpdt(7)=0              ! 
+         jpdt(8)=0              !
+         jpdt(9)=fortime        ! forecast hour
+         jpdt(10)=gcf(n)%var_g8  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level, 168 Ocean Model Layer,...)
+         jpdt(11)=0              ! scale factor
+         jpdt(12)=0             ! scale value
+         jpdt(13)=255
          jpdt(14)=0
+         jpdt(15)=0
+         jpdt(16)=0
 
          if (debug) write(logunit, *) 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:15)
 
@@ -769,8 +770,8 @@ contains
 
 
          ! Assign Template 5
-         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
-!         idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+!         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
+         idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
          
          idrtmpl=0
          ! Populate idrtmpl
@@ -818,15 +819,16 @@ contains
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !-----------------------------------------------------------------------------------
 
-  subroutine write_grib2_3d(fname, gcf, dims, nflds, field)
+  subroutine write_grib2_3d(fname, gcf, dims, nflds, field, rgmask3d)
    
    implicit none
 
    character(len=*), intent(in) :: fname
-   type(vardefs), allocatable, dimension(:) :: gcf  
+   type(vardefs),    intent(in) :: gcf(:)
    integer,          intent(in) :: dims(3)
    integer,          intent(in) :: nflds
    real,             intent(in) :: field( dims(1) * dims(2) , dims(3) , nflds )
+   real,             intent(in) :: rgmask3d(dims(1) * dims(2) , dims(3))
 
    ! internal variables
    integer(4) :: max_bytes, lengrib
@@ -1016,8 +1018,8 @@ contains
      bmp = (rgmask3d(:,lyr) == 1)
 
      ! Assign Template 5
-     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
-!     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+!     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
+     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
 
      idrtmpl=0
      ! Populate idrtmpl
