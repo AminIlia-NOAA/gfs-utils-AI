@@ -723,6 +723,8 @@ contains
 
          write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, gcf(n)%var_name, gcf(n)
 
+         write(logunit,*) 'size_bmp ,size_rgmask2d', size(bmp), size(rgmask2d)
+
        ! Compute max, min, and mean
          max_val = maxval(field(:,n))
          min_val = minval(field(:,n))
