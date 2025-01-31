@@ -732,6 +732,7 @@ contains
             write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, gcf(n)%var_name, gcf(n)
             write(logunit,*) 'size_bmp ,size_rgmask2d', size(bmp), size(rgmask2d)
             write(logunit, *) 'Variable_name, max, min, mean: ', gcf(n)%var_name, max_val, min_val, mean_val
+            write(logunit, *) 'forcast time: ', fortime
 !         end if
 
          call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ideflist, idefnum, ierr) ! there is an internal error here 
@@ -752,7 +753,7 @@ contains
          jpdt(6)=0              !    
          jpdt(7)=0              ! 
          jpdt(8)=1              ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
-         jpdt(7)=fortime        ! forecast hour
+         jpdt(7)=fortime        ! forecast time
          jpdt(8)=gcf(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
          jpdt(9)=0              ! 
          jpdt(10)=0             ! 
@@ -1063,7 +1064,6 @@ contains
 
      idrtlen=size(idrtmpl)
 
-     write(logunit, *) 'bmp: ', bmp
 
      call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
      idrtnum, idrtmpl, idrtlen, field(:,lyr,n), npt, ibmap, bmp, ierr)
