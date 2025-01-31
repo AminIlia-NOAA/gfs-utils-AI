@@ -724,9 +724,9 @@ contains
          end if
 
        ! Compute max, min, and mean
-         max_val = maxval(field(:,n).ne.vfill)
-         min_val = minval(field(:,n).ne.vfill)
-         mean_val = sum(field(:,n).ne.vfill) / size(field(:,n).ne.vfill)
+         max_val = maxval(field(:,n), mask = field(:,n) .ne. vfill)
+         min_val = minval(field(:,n), mask = field(:,n) .ne. vfill)
+         mean_val = sum(field(:,n), mask = field(:,n) .ne. vfill) / count(field(:,n) .ne. vfill)
 
 !         if (debug) then
             write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, gcf(n)%var_name, gcf(n)
@@ -750,7 +750,7 @@ contains
          jpdt(4)=0              !  
          jpdt(5)=96             ! Code ON388 Table A- GFS
          jpdt(6)=0              !    
-         jpdt(7)=0              ! forecast hour
+         jpdt(7)=0              ! 
          jpdt(8)=1              ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
          jpdt(7)=fortime        ! forecast hour
          jpdt(8)=gcf(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
@@ -774,7 +774,9 @@ contains
          ibmap = 0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
          bmp=.true.
 
-         if (gcf(n)%var_name .eq. 'WTMP') field(:,n) = field(:,n) + 273.15
+         if (gcf(n)%var_name .eq. 'WTMP') then
+            where ( field(:,n) .ne. vfill ) field(:,n) = field(:,n) + 273.15
+         endif
 
          where ( field(:,n) .eq. vfill ) field(:,n) = -9999.0
          where (field(:,n) .eq. -9999.0) bmp(:)= .false.
@@ -1021,7 +1023,7 @@ contains
      jpdt(15)=0
      jpdt(16)=0
 
-     if (debug) write(logunit, *) 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:15)
+     if (debug) write(logunit, *) 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:16)
 
      ipdtlen=size(jpdt)
 
@@ -1030,10 +1032,13 @@ contains
      ibmap=0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
      bmp=.true.
 
-     if (gcf(n)%var_name .eq. 'WTMP') field(:,lyr,n) = field(:,lyr,n) + 273.15
+     if (gcf(n)%var_name .eq. 'WTMP') then
+        where ( field(:,lyr,n) .ne. vfill ) field(:,lyr,n) = field(:,lyr,n) + 273.15
+     endif
 
      where ( field(:,lyr,n) .eq. vfill ) field(:,lyr,n) = -9999.0
-     where (field(:,lyr,n) .eq. -9999.0) bmp(:)= .false.
+
+     where ( field(:,lyr,n) .eq. -9999.0 ) bmp(:)= .false.
 
      ! Assign Template 5
 !     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
