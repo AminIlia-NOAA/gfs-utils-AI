@@ -2,6 +2,7 @@ module utils_mod
 
   use netcdf
   use init_mod, only : debug, logunit, vardefs, fsrc, input_file, ftype
+  use ieee_arithmetic
 
 
   implicit none
@@ -589,7 +590,7 @@ contains
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !-----------------------------------------------------------------------------------
 
-  subroutine write_grib2_2d(fname, gcf, dims, nflds, field, rgmask2d)
+  subroutine write_grib2_2d(fname, gcf, dims, nflds, field, rgmask2d, vfill)
    
        implicit none
    
@@ -599,6 +600,7 @@ contains
        integer,          intent(in) :: nflds
        real,             intent(inout) :: field(dims(1)*dims(2),nflds)
        real,             intent(in) :: rgmask2d(dims(1) * dims(2))
+       real,             intent(in) :: vfill
 
        ! internal variables
        integer(4) :: max_bytes, lengrib
@@ -721,16 +723,16 @@ contains
             return
          end if
 
-         write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, gcf(n)%var_name, gcf(n)
-
-         write(logunit,*) 'size_bmp ,size_rgmask2d', size(bmp), size(rgmask2d)
-
        ! Compute max, min, and mean
-         max_val = maxval(field(:,n))
-         min_val = minval(field(:,n))
-         mean_val = sum(field(:,n)) / size(field(:,n))
+         max_val = maxval(field(:,n).ne.vfill)
+         min_val = minval(field(:,n).ne.vfill)
+         mean_val = sum(field(:,n).ne.vfill) / size(field(:,n).ne.vfill)
 
-         write(logunit, *) 'Variable_name, max, min, mean: ', gcf(n)%var_name, max_val, min_val, mean_val
+!         if (debug) then
+            write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, gcf(n)%var_name, gcf(n)
+            write(logunit,*) 'size_bmp ,size_rgmask2d', size(bmp), size(rgmask2d)
+            write(logunit, *) 'Variable_name, max, min, mean: ', gcf(n)%var_name, max_val, min_val, mean_val
+!         end if
 
          call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ideflist, idefnum, ierr) ! there is an internal error here 
          if (ierr /= 0) then
@@ -745,16 +747,18 @@ contains
          jpdt(1)=gcf(n)%var_g5  ! parm number catagory
          jpdt(2)=gcf(n)%var_g6  ! parm number
          jpdt(3)=2              ! (0-analysis, 1-initialazation, 2-forecast, .. GRIB2 - CODE TABLE 4.3 )
-         jpdt(4)=0              ! 1: Forecast initialized from an earlier analysis
+         jpdt(4)=0              !  
          jpdt(5)=96             ! Code ON388 Table A- GFS
-         jpdt(6)=1              ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
-         jpdt(7)=0              ! 
-         jpdt(8)=0              !
-         jpdt(9)=fortime        ! forecast hour
-         jpdt(10)=gcf(n)%var_g8  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level, 168 Ocean Model Layer,...)
-         jpdt(11)=0              ! scale factor
-         jpdt(12)=0             ! scale value
-         jpdt(13)=255
+         jpdt(6)=0              !    
+         jpdt(7)=0              ! forecast hour
+         jpdt(8)=1              ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
+         jpdt(7)=fortime        ! forecast hour
+         jpdt(8)=gcf(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
+         jpdt(9)=0              ! 
+         jpdt(10)=0             ! 
+         jpdt(11)=255
+         jpdt(12)=0
+         jpdt(13)=0
          jpdt(14)=0
          jpdt(15)=0
          jpdt(16)=0
@@ -769,8 +773,13 @@ contains
 
          ibmap = 0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
          bmp=.true.
-!         where (rgmask2d == 1) bmp=.true.
-!         bmp=.true.
+
+         if (gcf(n)%var_name .eq. 'WTMP') field(:,n) = field(:,n) + 273.15
+
+         where ( field(:,n) .eq. vfill ) field(:,n) = -9999.0
+         where (field(:,n) .eq. -9999.0) bmp(:)= .false.
+
+         write(logunit, *) 'bmp: ', bmp
 
          ! Assign Template 5
 !         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
@@ -780,7 +789,7 @@ contains
          ! Populate idrtmpl
          idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
          idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
-         idrtmpl(3) = 2             ! Decimal scale factor (scale by 10^D)
+         idrtmpl(3) = 3             ! Decimal scale factor (scale by 10^D)
          idrtmpl(4) = 0             !
          idrtmpl(5) = 0             !
          ! Reserved fields
@@ -788,14 +797,6 @@ contains
 
          idrtlen=size(idrtmpl)
 
-
-         if (gcf(n)%var_name .eq. 'WTMP') field(:,n) = field(:,n) + 273.15
-
-         where ( field(:,n) < -9999 ) field(:,n) = -9999.0
-
-         where (field(:,n) .eq. -9999.0) bmp= .false.
-        
-         write(logunit, *) 'bmp: ', bmp
 
          call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
          idrtnum, idrtmpl, idrtlen, field(:,n), npt, ibmap, bmp, ierr)
@@ -827,7 +828,7 @@ contains
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !-----------------------------------------------------------------------------------
 
-  subroutine write_grib2_3d(fname, gcf, dims, nflds, field, rgmask3d)
+  subroutine write_grib2_3d(fname, gcf, dims, nflds, field, rgmask3d, vfill)
    
    implicit none
 
@@ -837,6 +838,7 @@ contains
    integer,          intent(in) :: nflds
    real,             intent(inout) :: field( dims(1) * dims(2) , dims(3) , nflds )
    real,             intent(in) :: rgmask3d(dims(1) * dims(2) , dims(3))
+   real,             intent(in) :: vfill
 
    ! internal variables
    integer(4) :: max_bytes, lengrib
@@ -1003,14 +1005,14 @@ contains
      jpdt(1)=gcf(n)%var_g5  ! parm number catagory
      jpdt(2)=gcf(n)%var_g6  ! parm number
      jpdt(3)=2              ! (0-analysis, 1-initialazation, 2-forecast, .. GRIB2 - CODE TABLE 4.3 )
-     jpdt(4)=0              !   1: Forecast initialized from an earlier analysis
-     jpdt(5)=96              ! Code ON388 Table A- GFS
-     jpdt(6)=1              !    unit (Hour=1)    6hour=11     (ask later) Table 4.4
-     jpdt(7)=0      ! forecast hour
-     jpdt(8)=0      !
+     jpdt(4)=0              !  
+     jpdt(5)=96             ! Code ON388 Table A- GFS
+     jpdt(6)=0              !    
+     jpdt(7)=0              ! forecast hour
+     jpdt(8)=1              ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
      jpdt(7)=fortime        ! forecast hour
-     jpdt(8)=gcf(n)%var_g8  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
-     jpdt(9)=0             ! scale factor
+     jpdt(8)=gcf(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
+     jpdt(9)=0              ! scale factor
      jpdt(10)=dep(lyr)      ! scale value
      jpdt(11)=255
      jpdt(12)=0
@@ -1028,6 +1030,11 @@ contains
      ibmap=0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
      bmp=.true.
 
+     if (gcf(n)%var_name .eq. 'WTMP') field(:,lyr,n) = field(:,lyr,n) + 273.15
+
+     where ( field(:,lyr,n) .eq. vfill ) field(:,lyr,n) = -9999.0
+     where (field(:,lyr,n) .eq. -9999.0) bmp(:)= .false.
+
      ! Assign Template 5
 !     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
      idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
@@ -1036,17 +1043,13 @@ contains
      ! Populate idrtmpl
      idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
      idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
-     idrtmpl(3) = 2             ! Decimal scale factor (scale by 10^D)
+     idrtmpl(3) = 3             ! Decimal scale factor (scale by 10^D)
      idrtmpl(4) = 0             !
      idrtmpl(5) = 0             ! 
      ! Reserved fields
 !     idrtmpl(6:16) = 0          ! Reserved for future use 
 
      idrtlen=size(idrtmpl)
-
-     where ( field(:,lyr,n) < -9999 ) field(:,lyr,n) = -9999.0
-
-     where (field(:,lyr,n) .eq. -9999.0) bmp= .false.
 
      write(logunit, *) 'bmp: ', bmp
 
