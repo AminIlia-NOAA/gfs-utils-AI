@@ -1031,15 +1031,14 @@ contains
 
      numcoord=0
      coordlist=0.  ! needed for hybrid vertical coordinate
-     ibmap=255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
+     ibmap=0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
      bmp=.true.
 
      if (gcf(n)%var_name .eq. 'WTMP') then
         where ( field(:,lyr,n) .ne. vfill ) field(:,lyr,n) = field(:,lyr,n) + 273.15
      endif
 
-!     where ( field(:,lyr,n) .eq. vfill ) field(:,lyr,n) = -9999.0
-!     where ( field(:,lyr,n) .eq. -9999.0 ) bmp(:)= .false.
+     where ( field(:,lyr,n) .eq. vfill )  bmp(:)= .false.
 
      ! Assign Template 5
 
@@ -1053,8 +1052,6 @@ contains
      idrtmpl(4) = 0             !
      idrtmpl(5) = 0             ! 
      idrtmpl(6) = 0             ! 
-!     idrtmpl(7) = 1             ! 
-!     idrtmpl(8) =-9999.0
      ! Reserved fields
      idrtmpl(9:16) = 0          ! Reserved for future use 
 
