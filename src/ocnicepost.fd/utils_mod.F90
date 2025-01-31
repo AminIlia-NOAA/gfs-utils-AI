@@ -771,17 +771,17 @@ contains
          coordlist=0.  ! needed for hybrid vertical coordinate
 
 
-         ibmap = 0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
+         ibmap = 255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
          bmp=.true.
 
          if (gcf(n)%var_name .eq. 'WTMP') then
             where ( field(:,n) .ne. vfill ) field(:,n) = field(:,n) + 273.15
          endif
 
-         where ( field(:,n) .eq. vfill ) field(:,n) = -9999.0
-         where (field(:,n) .eq. -9999.0) bmp(:)= .false.
+!         where ( field(:,n) .eq. vfill ) field(:,n) = -9999.0
+!         where (field(:,n) .eq. -9999.0) bmp(:)= .false.
 
-         write(logunit, *) 'bmp: ', bmp
+!         write(logunit, *) 'bmp: ', bmp
 
          !        Create Section 5 parametrs   
          idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
@@ -795,11 +795,13 @@ contains
          idrtmpl(5) = 0             ! 
          idrtmpl(6) = 0             ! 
          idrtmpl(7) = 1             ! 
-         idrtmpl(8) =-9999.0
+         idrtmpl(8) =vfill
          ! Reserved fields
     !     idrtmpl(6:16) = 0          ! Reserved for future use 
 
          idrtlen=size(idrtmpl)
+
+         write(logunit, *) 'idrtmpl: ', idrtmpl
 
 
          call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
