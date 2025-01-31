@@ -779,13 +779,13 @@ contains
          endif
 
          where ( field(:,n) .eq. vfill ) field(:,n) = -9999.0
-         where (field(:,n) .eq. -9999.0) bmp(:)= .false.
+         where (field(:,n) .eq. -9999.0) bmp(:) = .false.
 
          write(logunit, *) 'bmp: ', bmp
 
          ! Assign Template 5
-!         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
-         idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
+!         idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
          
          idrtmpl=0
          ! Populate idrtmpl
@@ -1010,7 +1010,7 @@ contains
      jpdt(4)=0              !  
      jpdt(5)=96             ! Code ON388 Table A- GFS
      jpdt(6)=0              !    
-     jpdt(7)=0              ! forecast hour
+     jpdt(7)=0              ! 
      jpdt(8)=1              ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
      jpdt(7)=fortime        ! forecast hour
      jpdt(8)=gcf(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
@@ -1041,8 +1041,8 @@ contains
      where ( field(:,lyr,n) .eq. -9999.0 ) bmp(:)= .false.
 
      ! Assign Template 5
-!     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
-     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
+!     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
 
      idrtmpl=0
      ! Populate idrtmpl
