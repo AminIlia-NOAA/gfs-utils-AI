@@ -779,23 +779,25 @@ contains
          endif
 
          where ( field(:,n) .eq. vfill ) field(:,n) = -9999.0
-         where (field(:,n) .eq. -9999.0) bmp(:) = .false.
+         where (field(:,n) .eq. -9999.0) bmp(:)= .false.
 
          write(logunit, *) 'bmp: ', bmp
 
-         ! Assign Template 5
-         idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
-!         idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
-         
+         !        Create Section 5 parametrs   
+         idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+
          idrtmpl=0
          ! Populate idrtmpl
          idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
          idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
          idrtmpl(3) = 3             ! Decimal scale factor (scale by 10^D)
          idrtmpl(4) = 0             !
-         idrtmpl(5) = 0             !
+         idrtmpl(5) = 0             ! 
+         idrtmpl(6) = 0             ! 
+         idrtmpl(7) = 1             ! 
+         idrtmpl(8) =-9999.0
          ! Reserved fields
-    !     idrtmpl(6:16) = 0          ! Reserved for future use
+    !     idrtmpl(6:16) = 0          ! Reserved for future use 
 
          idrtlen=size(idrtmpl)
 
@@ -1041,8 +1043,8 @@ contains
      where ( field(:,lyr,n) .eq. -9999.0 ) bmp(:)= .false.
 
      ! Assign Template 5
-     idrtnum = 0                            ! Template 5.0 (Grid Point Data - Simple Packing)
-!     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+
+     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
 
      idrtmpl=0
      ! Populate idrtmpl
@@ -1051,6 +1053,9 @@ contains
      idrtmpl(3) = 3             ! Decimal scale factor (scale by 10^D)
      idrtmpl(4) = 0             !
      idrtmpl(5) = 0             ! 
+     idrtmpl(6) = 0             ! 
+     idrtmpl(7) = 1             ! 
+     idrtmpl(8) =-9999.0
      ! Reserved fields
 !     idrtmpl(6:16) = 0          ! Reserved for future use 
 
