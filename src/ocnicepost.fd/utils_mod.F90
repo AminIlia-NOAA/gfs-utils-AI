@@ -797,7 +797,7 @@ contains
          idrtmpl(7) = 1             ! 
          idrtmpl(8) =vfill
          ! Reserved fields
-    !     idrtmpl(6:16) = 0          ! Reserved for future use 
+         idrtmpl(9:16) = 0          ! Reserved for future use 
 
          idrtlen=size(idrtmpl)
 
@@ -1033,16 +1033,16 @@ contains
 
      numcoord=0
      coordlist=0.  ! needed for hybrid vertical coordinate
-     ibmap=0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
+     ibmap=255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
      bmp=.true.
 
      if (gcf(n)%var_name .eq. 'WTMP') then
         where ( field(:,lyr,n) .ne. vfill ) field(:,lyr,n) = field(:,lyr,n) + 273.15
      endif
 
-     where ( field(:,lyr,n) .eq. vfill ) field(:,lyr,n) = -9999.0
+!     where ( field(:,lyr,n) .eq. vfill ) field(:,lyr,n) = -9999.0
 
-     where ( field(:,lyr,n) .eq. -9999.0 ) bmp(:)= .false.
+!     where ( field(:,lyr,n) .eq. -9999.0 ) bmp(:)= .false.
 
      ! Assign Template 5
 
@@ -1059,7 +1059,7 @@ contains
      idrtmpl(7) = 1             ! 
      idrtmpl(8) =-9999.0
      ! Reserved fields
-!     idrtmpl(6:16) = 0          ! Reserved for future use 
+     idrtmpl(9:16) = 0          ! Reserved for future use 
 
      idrtlen=size(idrtmpl)
 
