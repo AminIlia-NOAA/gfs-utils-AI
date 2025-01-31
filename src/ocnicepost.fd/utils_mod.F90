@@ -626,6 +626,7 @@ contains
        npt = dims(1) * dims(2)
    
        max_bytes = npt * 4  ! Estimated max bytes
+       bmp=.true.
 
        call getlun(lunout)
        call baopenw(lunout, trim(fname), ierr)
@@ -728,12 +729,11 @@ contains
          min_val = minval(field(:,n), mask = field(:,n) .ne. vfill)
          mean_val = sum(field(:,n), mask = field(:,n) .ne. vfill) / count(field(:,n) .ne. vfill)
 
-!         if (debug) then
-            write(logunit, *) 'n, nflds, npt: ', n, nflds, npt, gcf(n)%var_name, gcf(n)
+         if (debug) then
+            write(logunit, *) 'var_name, n: ', gcf(n)%var_name, n
             write(logunit,*) 'size_bmp ,size_rgmask2d', size(bmp), size(rgmask2d)
             write(logunit, *) 'Variable_name, max, min, mean: ', gcf(n)%var_name, max_val, min_val, mean_val
-            write(logunit, *) 'forcast time: ', fortime
-!         end if
+         end if
 
          call addgrid(cgrib, max_bytes, igds, jgdt, igdtlen, ideflist, idefnum, ierr) ! there is an internal error here 
          if (ierr /= 0) then
@@ -743,7 +743,6 @@ contains
 
 !        Create Section 4 parametrs    
          ipdtnum=0
-
 
          jpdt(1)=gcf(n)%var_g5  ! parm number catagory
          jpdt(2)=gcf(n)%var_g6  ! parm number
@@ -771,7 +770,6 @@ contains
          numcoord=0
          coordlist=0.  ! needed for hybrid vertical coordinate
 
-
          ibmap = 255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
          bmp=.true.
 
@@ -782,12 +780,10 @@ contains
 !         where ( field(:,n) .eq. vfill ) field(:,n) = -9999.0
 !         where (field(:,n) .eq. -9999.0) bmp(:)= .false.
 
-!         write(logunit, *) 'bmp: ', bmp
-
          !        Create Section 5 parametrs   
          idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
 
-         idrtmpl=0
+         idrtmpl(:)=0
          ! Populate idrtmpl
          idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
          idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
@@ -795,14 +791,14 @@ contains
          idrtmpl(4) = 0             !
          idrtmpl(5) = 0             ! 
          idrtmpl(6) = 0             ! 
-         idrtmpl(7) = 1             ! 
-         idrtmpl(8) =vfill
+!         idrtmpl(7) = 1             ! 
+!         idrtmpl(8) =vfill
          ! Reserved fields
          idrtmpl(9:16) = 0          ! Reserved for future use 
 
          idrtlen=size(idrtmpl)
 
-         write(logunit, *) 'idrtmpl: ', idrtmpl
+         if (debug) write(logunit, *) 'idrtmpl: ', idrtmpl
 
 
          call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
@@ -812,9 +808,9 @@ contains
              return
          end if
 
-         call gribend(cgrib,max_bytes,lengrib,ierr)
-         write(logunit, *) 'gribend status=',ierr
-         write(logunit, *) 'length of the final GRIB2 message in octets =',lengrib
+         call gribend(cgrib, max_bytes, lengrib, ierr)
+         if (debug) write(logunit, *) 'gribend status=', ierr
+         if (debug) write(logunit, *) 'length of the final GRIB2 message in octets =', lengrib
          call wryte(lunout, lengrib, cgrib)
 
          deallocate(cgrib)
@@ -873,6 +869,7 @@ contains
    npt = dims(1) * dims(2)
 
    max_bytes = npt * 4
+   bmp=.true.
 
    call getlun(lunout)
    call baopenw(lunout, trim(fname), ierr)
@@ -1042,14 +1039,13 @@ contains
      endif
 
 !     where ( field(:,lyr,n) .eq. vfill ) field(:,lyr,n) = -9999.0
-
 !     where ( field(:,lyr,n) .eq. -9999.0 ) bmp(:)= .false.
 
      ! Assign Template 5
 
      idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
 
-     idrtmpl=0
+     idrtmpl(:)=0
      ! Populate idrtmpl
      idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
      idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
@@ -1057,8 +1053,8 @@ contains
      idrtmpl(4) = 0             !
      idrtmpl(5) = 0             ! 
      idrtmpl(6) = 0             ! 
-     idrtmpl(7) = 1             ! 
-     idrtmpl(8) =-9999.0
+!     idrtmpl(7) = 1             ! 
+!     idrtmpl(8) =-9999.0
      ! Reserved fields
      idrtmpl(9:16) = 0          ! Reserved for future use 
 
@@ -1073,8 +1069,8 @@ contains
      end if
 
      call gribend(cgrib, max_bytes, lengrib, ierr)
-     write(logunit, *) 'gribend status=', ierr
-     write(logunit, *) 'length of the final GRIB2 message in octets =', lengrib
+     if (debug) write(logunit, *) 'gribend status=', ierr
+     if (debug) write(logunit, *) 'length of the final GRIB2 message in octets =', lengrib
      call wryte(lunout, lengrib, cgrib)
 
      deallocate(cgrib)
