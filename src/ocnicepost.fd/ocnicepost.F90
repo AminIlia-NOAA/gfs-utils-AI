@@ -266,20 +266,20 @@ program ocnicepost
    if (debug) write(logunit, '(a)')'GRIB2 2D output file: '//trim(gout)
 
    if (allocated(rgb2d) .and. allocated(rgc2d)) then
-      allocate(grib2d(nxr*nyr,nconsd2d+nbilin2d)); grib2d=0.0
-      allocate(g2d(1:nconsd2d+nbilin2d)); g2d=0.0
+      allocate(grib2d(nxr*nyr,nconsd2d+nbilin2d), source=0.0)
+      allocate(g2d(1:nconsd2d+nbilin2d), source=0.0)
       grib2d(:, 1:nbilin2d) = rgb2d
       grib2d(:, nbilin2d+1:nconsd2d+nbilin2d) = rgc2d
       g2d(1:nbilin2d) = b2d
       g2d(nbilin2d+1:nconsd2d+nbilin2d) = c2d
    else if (allocated(rgb2d)) then
-      allocate(grib2d(nxr*nyr,nconsd2d)); grib2d=0.0
-      allocate(g2d(1:nconsd2d)); g2d=0.0
+      allocate(grib2d(nxr*nyr,nconsd2d), source=0.0)
+      allocate(g2d(1:nconsd2d), source=0.0)
       grib2d(:, 1:nconsd2d) = rgc2d
       g2d(1:nconsd2d) = c2d
    else if (allocated(rgc2d)) then
-      allocate(grib2d(nxr*nyr,nbilin2d)); grib2d=0.0
-      allocate(g2d(1:nbilin2d)); g2d=0.0
+      allocate(grib2d(nxr*nyr,nbilin2d), source=0.0)
+      allocate(g2d(1:nbilin2d), source=0.0)
       grib2d(:, 1:nbilin2d) = rgb2d
       g2d(1:nbilin2d) = b2d
    end if
