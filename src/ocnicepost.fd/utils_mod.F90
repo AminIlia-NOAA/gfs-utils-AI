@@ -770,15 +770,14 @@ contains
          numcoord=0
          coordlist=0.  ! needed for hybrid vertical coordinate
 
-         ibmap = 255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
+         ibmap = 0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
          bmp=.true.
 
          if (gcf(n)%var_name .eq. 'WTMP') then
             where ( field(:,n) .ne. vfill ) field(:,n) = field(:,n) + 273.15
          endif
 
-!         where ( field(:,n) .eq. vfill ) field(:,n) = -9999.0
-!         where (field(:,n) .eq. -9999.0) bmp(:)= .false.
+         where ( field(:,n) .eq. vfill )  bmp(:)= .false.
 
          !        Create Section 5 parametrs   
          idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
@@ -791,10 +790,8 @@ contains
          idrtmpl(4) = 0             !
          idrtmpl(5) = 0             ! 
          idrtmpl(6) = 0             ! 
-!         idrtmpl(7) = 1             ! 
-!         idrtmpl(8) =vfill
          ! Reserved fields
-         idrtmpl(9:16) = 0          ! Reserved for future use 
+         idrtmpl(7:16) = 0          ! Reserved for future use 
 
          idrtlen=size(idrtmpl)
 
@@ -886,7 +883,6 @@ contains
 
    listsec1(1) = gcf(1)%var_g3     ! Originating Centre (Common Code Table C-1)
    listsec1(2) = 0                 ! Originating Sub-centre (local table) EMC=4
-!   listsec1(3) = 32                 ! GRIB Master Tables Version Number (Code Table 1.0)-last one currently 32
    listsec1(3) = gcf(1)%var_g2     ! GRIB Master Tables Version Number (Code Table 1.0)
    listsec1(4) = 1                 ! GRIB Local Tables Version Number (Code Table 1.1)
    listsec1(5) = 1                 ! Significance of Reference Time (Code Table 1.2)
@@ -1053,7 +1049,7 @@ contains
      idrtmpl(5) = 0             ! 
      idrtmpl(6) = 0             ! 
      ! Reserved fields
-     idrtmpl(9:16) = 0          ! Reserved for future use 
+     idrtmpl(7:16) = 0          ! Reserved for future use 
 
      idrtlen=size(idrtmpl)
 
