@@ -603,7 +603,7 @@ contains
        real,             intent(in) :: vfill
 
        ! internal variables
-       integer(4) :: max_bytes, lengrib
+       integer :: max_bytes, lengrib
        integer :: ref_time(6)
        integer :: lunout, ierr
        integer :: fortime, dij, npt
@@ -614,9 +614,9 @@ contains
        integer :: igdtnum, ipdtnum, idrtnum
        integer :: igdtlen, ipdtlen, idrtlen
        integer :: jgdt(19), jpdt(15), idrtmpl(16)
-       integer(4) :: igds(5)
+       integer :: igds(5)
        integer :: numcoord, ibmap
-       real(4) :: coordlist
+       real    :: coordlist
        integer :: n, lon0, lon1, lat0, lat1
        integer :: ideflist, idefnum
        logical :: bmp(dims(1)*dims(2)) 
@@ -841,7 +841,7 @@ contains
    real,             intent(in) :: vfill
 
    ! internal variables
-   integer(4) :: max_bytes, lengrib
+   integer :: max_bytes, lengrib
    integer :: ref_time(6)
    integer :: lunout, ierr
    integer :: fortime, dij, npt
@@ -852,9 +852,9 @@ contains
    integer :: igdtnum, ipdtnum, idrtnum
    integer :: igdtlen, ipdtlen, idrtlen
    integer :: jgdt(19), jpdt(15), idrtmpl(16)
-   integer(4) :: igds(5)
+   integer :: igds(5)
    integer :: numcoord, ibmap
-   real(4) :: coordlist
+   real :: coordlist
    integer :: ideflist, idefnum
    logical :: bmp( dims(1) * dims(2) ) 
 
