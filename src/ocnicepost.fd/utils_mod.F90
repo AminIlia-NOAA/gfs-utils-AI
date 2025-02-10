@@ -679,7 +679,7 @@ contains
        jgdt(8) = dims(1)             
        jgdt(9) = dims(2)        
        jgdt(10) = 0
-       jgdt(11) = 1000000   
+       jgdt(11) = -1    
        jgdt(12) = lat0
        jgdt(13) = lon0
        jgdt(14) = 48   !0
@@ -776,17 +776,17 @@ contains
             where ( field(:,n) .ne. vfill ) field(:,n) = field(:,n) + 273.15
          endif
 
-         where ( field(:,n) .eq. vfill )  field(:,n)= 999.0
+         where ( field(:,n) .eq. vfill )  field(:,n)= -9999.0
 
          !        Create Section 5 parametrs   
          idrtnum = 0                            ! Template 5.2 (Grid Point Data - complex Packing)
 
          idrtmpl(:)=0
          ! Populate idrtmpl
-         idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
-         idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
-         idrtmpl(3) = 3             ! Decimal scale factor (scale by 10^D)
-         idrtmpl(4) = 0             !
+         idrtmpl(1) = min_val             ! Reference value (scaled value of the minimum data point)
+         idrtmpl(2) = 100             ! Binary scale factor (scale by 2^E)
+         idrtmpl(3) = 0             ! Decimal scale factor (scale by 10^D)
+         idrtmpl(4) = 32             !
          idrtmpl(5) = 0             ! 
          idrtmpl(6) = 0             ! 
          ! Reserved fields
@@ -943,7 +943,7 @@ contains
    jgdt(8) = dims(1)             
    jgdt(9) = dims(2)        
    jgdt(10) = 0
-   jgdt(11) = 1000000   
+   jgdt(11) = -1   
    jgdt(12) = lat0
    jgdt(13) = lon0
    jgdt(14) = 48   
@@ -1003,28 +1003,29 @@ contains
      ipdtnum=0
 
 
-     jpdt(1)=gcf(n)%var_g5  ! parm number catagory
-     jpdt(2)=gcf(n)%var_g6  ! parm number
-     jpdt(3)=2              ! (0-analysis, 1-initialazation, 2-forecast, .. GRIB2 - CODE TABLE 4.3 )
-     jpdt(4)=0              !  
-     jpdt(5)=96             ! Code ON388 Table A- GFS
-     jpdt(6)=0              !    
-     jpdt(7)=0              ! 
-     jpdt(8)=1              ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
-     jpdt(9)=fortime        ! forecast hour
+     jpdt(1)=gcf(n)%var_g5   ! parm number catagory
+     jpdt(2)=gcf(n)%var_g6   ! parm number
+     jpdt(3)=2               ! (0-analysis, 1-initialazation, 2-forecast, .. GRIB2 - CODE TABLE 4.3 )
+     jpdt(4)=0               !  
+     jpdt(5)=96              ! Code ON388 Table A- GFS
+     jpdt(6)=0               !    
+     jpdt(7)=0               ! 
+     jpdt(8)=1               ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
+     jpdt(9)=fortime         ! forecast hour
      jpdt(10)=gcf(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
      jpdt(11)=0              ! scale factor
-     jpdt(12)=dep(lyr)      ! scale value
+     jpdt(12)=dep(lyr)       ! scale value
      jpdt(13)=255
      jpdt(14)=0
      jpdt(15)=0
 
-     if (debug) write(logunit, *) 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:16)
+     if (debug) write(logunit, *) 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:15)
 
      ipdtlen=size(jpdt)
 
      numcoord=0
      coordlist=0.  ! needed for hybrid vertical coordinate
+
      ibmap=255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
      bmp=.true.
 
