@@ -779,14 +779,14 @@ contains
          where ( field(:,n) .eq. vfill )  field(:,n)= -9999.0
 
          !        Create Section 5 parametrs   
-         idrtnum = 0                            ! Template 5.2 (Grid Point Data - complex Packing)
+         idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
 
          idrtmpl(:)=0
          ! Populate idrtmpl
-         idrtmpl(1) = min_val             ! Reference value (scaled value of the minimum data point)
-         idrtmpl(2) = 100             ! Binary scale factor (scale by 2^E)
-         idrtmpl(3) = 0             ! Decimal scale factor (scale by 10^D)
-         idrtmpl(4) = 32             !
+         idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
+         idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
+         idrtmpl(3) = -3             ! Decimal scale factor (scale by 10^D)
+         idrtmpl(4) = 0             !
          idrtmpl(5) = 0             ! 
          idrtmpl(6) = 0             ! 
          ! Reserved fields
