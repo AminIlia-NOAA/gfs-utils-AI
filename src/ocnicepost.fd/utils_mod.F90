@@ -608,6 +608,7 @@ contains
        integer :: lunout, ierr
        integer :: fortime, dij, npt
        CHARACTER(len=1),allocatable,dimension(:) :: cgrib
+       real :: tmpfld(size(field(:,1))
 
        ! GRIB2 metadata arrays
        integer :: listsec0(2), listsec1(13)
@@ -797,9 +798,11 @@ contains
 
          if (debug) write(logunit, *) 'idrtmpl: ', idrtmpl
 
+         tmpfld=0 
+         tmpfld =field(:,n)
 
          call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
-         idrtnum, idrtmpl, idrtlen, field(:,n), npt, ibmap, bmp, ierr)
+         idrtnum, idrtmpl, idrtlen, tmpfld, npt, ibmap, bmp, ierr)
          if (ierr /= 0) then
              write(0, *) 'Error adding field to GRIB2 message', ierr
              return
@@ -1027,18 +1030,18 @@ contains
 
      numcoord=0
      coordlist=0.  ! needed for hybrid vertical coordinate
-     ibmap=0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
+     ibmap=255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
      bmp=.true.
 
      if (gcf(n)%var_name .eq. 'WTMP') then
         where ( field(:,lyr,n) .ne. vfill ) field(:,lyr,n) = field(:,lyr,n) + 273.15
      endif
 
-     where ( field(:,lyr,n) .eq. vfill )  bmp(:)= .false.
+!     where ( field(:,lyr,n) .eq. vfill )  bmp(:)= .false.
 
      ! Assign Template 5
 
-     idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+     idrtnum = 0                            ! Template 5.2 (Grid Point Data - complex Packing)
 
      idrtmpl(:)=0
      ! Populate idrtmpl
@@ -1056,7 +1059,7 @@ contains
 
      call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
      idrtnum, idrtmpl, idrtlen, field(:,lyr,n), npt, ibmap, bmp, ierr)
-     if (ierr /= 0) then
+     if (ierr /=- 0) then
          write(0, *) 'Error adding field to GRIB2 message', ierr
          return
      end if
