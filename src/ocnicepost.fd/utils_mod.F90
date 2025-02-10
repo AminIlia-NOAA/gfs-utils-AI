@@ -596,30 +596,30 @@ contains
    
        character(len=*), intent(in) :: fname
        type(vardefs),    intent(in) :: gcf(:) 
-       integer,          intent(in) :: dims(2)
-       integer,          intent(in) :: nflds
-       real,             intent(inout) :: field(dims(1)*dims(2),nflds)
-       real,             intent(in) :: rgmask2d(dims(1) * dims(2))
-       real,             intent(in) :: vfill
+       integer(4),          intent(in) :: dims(2)
+       integer(4),          intent(in) :: nflds
+       real(4),             intent(inout) :: field(dims(1)*dims(2),nflds)
+       real(4),             intent(in) :: rgmask2d(dims(1) * dims(2))
+       real(4),             intent(in) :: vfill
 
        ! internal variables
-       integer :: max_bytes, lengrib
-       integer :: ref_time(6)
-       integer :: lunout, ierr
-       integer :: fortime, dij, npt
+       integer(4) :: max_bytes, lengrib
+       integer(4) :: ref_time(6)
+       integer(4) :: lunout, ierr
+       integer(4) :: fortime, dij, npt
        CHARACTER(len=1),allocatable,dimension(:) :: cgrib
-       real :: tmpfld(size(field(:,1))
+       real(4) :: tmpfld(size(field(:,1)))
 
        ! GRIB2 metadata arrays
-       integer :: listsec0(2), listsec1(13)
-       integer :: igdtnum, ipdtnum, idrtnum
-       integer :: igdtlen, ipdtlen, idrtlen
-       integer :: jgdt(19), jpdt(15), idrtmpl(16)
-       integer :: igds(5)
-       integer :: numcoord, ibmap
+       integer(4) :: listsec0(2), listsec1(13)
+       integer(4) :: igdtnum, ipdtnum, idrtnum
+       integer(4) :: igdtlen, ipdtlen, idrtlen
+       integer(4) :: jgdt(19), jpdt(15), idrtmpl(16)
+       integer(4) :: igds(5)
+       integer(4) :: numcoord, ibmap
        real    :: coordlist
-       integer :: n, lon0, lon1, lat0, lat1
-       integer :: ideflist, idefnum
+       integer(4) :: n, lon0, lon1, lat0, lat1
+       integer(4) :: ideflist, idefnum
        logical :: bmp(dims(1)*dims(2)) 
 
        real :: max_val, min_val, mean_val
@@ -771,17 +771,17 @@ contains
          numcoord=0
          coordlist=0.  ! needed for hybrid vertical coordinate
 
-         ibmap = 0     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
+         ibmap = 255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
          bmp=.true.
 
          if (gcf(n)%var_name .eq. 'WTMP') then
             where ( field(:,n) .ne. vfill ) field(:,n) = field(:,n) + 273.15
          endif
 
-         where ( field(:,n) .eq. vfill )  bmp(:)= .false.
+         where ( field(:,n) .eq. vfill )  field(:,n)= 999.0
 
          !        Create Section 5 parametrs   
-         idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+         idrtnum = 0                            ! Template 5.2 (Grid Point Data - complex Packing)
 
          idrtmpl(:)=0
          ! Populate idrtmpl
