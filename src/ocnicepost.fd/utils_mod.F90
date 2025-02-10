@@ -753,16 +753,14 @@ contains
          jpdt(6)=0              !    
          jpdt(7)=0              ! 
          jpdt(8)=1              ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
-         jpdt(7)=fortime        ! forecast time
-         jpdt(8)=gcf(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
-         jpdt(9)=0              ! 
-         jpdt(10)=0             ! 
-         jpdt(11)=255
-         jpdt(12)=0
+         jpdt(9)=fortime        ! forecast time
+         jpdt(10)=gcf(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
+         jpdt(11)=0              ! 
+         jpdt(12)=0             ! 
          jpdt(13)=0
          jpdt(14)=0
          jpdt(15)=0
-         jpdt(16)=0
+
 
          if (debug) write(logunit, *) 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:16)
 
@@ -1013,16 +1011,13 @@ contains
      jpdt(6)=0              !    
      jpdt(7)=0              ! 
      jpdt(8)=1              ! unit (Hour=1)    6hour=11     (ask later) Table 4.4
-     jpdt(7)=fortime        ! forecast hour
-     jpdt(8)=gcf(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
-     jpdt(9)=0              ! scale factor
-     jpdt(10)=dep(lyr)      ! scale value
-     jpdt(11)=255
-     jpdt(12)=0
-     jpdt(13)=0
+     jpdt(9)=fortime        ! forecast hour
+     jpdt(10)=gcf(n)%var_g7  ! level ID (1-Ground or Water Surface, 101 mean sea level, 160 depth bellow mean sea level , 168-Ocean Model Layer,...)
+     jpdt(11)=0              ! scale factor
+     jpdt(12)=dep(lyr)      ! scale value
+     jpdt(13)=255
      jpdt(14)=0
      jpdt(15)=0
-     jpdt(16)=0
 
      if (debug) write(logunit, *) 'ipdtnum=', ipdtnum, ', jpdt= ', jpdt(1:16)
 
