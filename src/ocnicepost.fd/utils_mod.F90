@@ -785,7 +785,7 @@ contains
          ! Populate idrtmpl
          idrtmpl(1) = 0             ! Reference value (scaled value of the minimum data point)
          idrtmpl(2) = 0             ! Binary scale factor (scale by 2^E)
-         idrtmpl(3) = -3             ! Decimal scale factor (scale by 10^D)
+         idrtmpl(3) = 2            ! Decimal scale factor (scale by 10^D)
          idrtmpl(4) = 0             !
          idrtmpl(5) = 0             ! 
          idrtmpl(6) = 0             ! 
