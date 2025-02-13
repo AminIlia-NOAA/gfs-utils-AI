@@ -594,8 +594,8 @@ contains
    
        implicit none
    
-       character(len=*), intent(in) :: fname
-       type(vardefs),    intent(in) :: gcf(:) 
+       character(len=*),    intent(in) :: fname
+       type(vardefs),       intent(in) :: gcf(:) 
        integer(4),          intent(in) :: dims(2)
        integer(4),          intent(in) :: nflds
        real(4),             intent(inout) :: field(dims(1)*dims(2),nflds)
@@ -608,8 +608,8 @@ contains
        integer(4) :: lunout, ierr
        integer(4) :: fortime, dij, npt
        CHARACTER(len=1),allocatable,dimension(:) :: cgrib
-       real(4) :: tmpfld(size(field(:,1)))
-
+       real(4) :: tmpfld(size(field,1))
+k
        ! GRIB2 metadata arrays
        integer(4) :: listsec0(2), listsec1(13)
        integer(4) :: igdtnum, ipdtnum, idrtnum
@@ -622,7 +622,7 @@ contains
        integer(4) :: ideflist, idefnum
        logical :: bmp(dims(1)*dims(2)) 
 
-       real :: max_val, min_val, mean_val
+       real :: max_val, min_val, mean_val, count_val
 
        npt = dims(1) * dims(2)
    
@@ -772,14 +772,14 @@ contains
          ibmap = 255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
          bmp=.true.
 
-         if (gcf(n)%var_name .eq. 'WTMP') then
+         if (trim(gcf(n)%name_gb2) .eq. 'WTMP') then
             where ( field(:,n) .ne. vfill ) field(:,n) = field(:,n) + 273.15
          endif
 
-         where ( field(:,n) .eq. vfill )  field(:,n)= -9999.0
+         where ( field(:,n) .eq. vfill )  field(:,n)= 9999.0
 
          !        Create Section 5 parametrs   
-         idrtnum = 2                            ! Template 5.2 (Grid Point Data - complex Packing)
+         idrtnum = 0                            ! Template 5.2 (Grid Point Data - complex Packing)
 
          idrtmpl(:)=0
          ! Populate idrtmpl
@@ -798,6 +798,9 @@ contains
 
          tmpfld=0 
          tmpfld =field(:,n)
+
+
+         write(logunit, *) 'Variable_name, max, min, mean, count: ', gcf(n)%var_name, max_val, min_val, mean_val, count_val
 
          call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
          idrtnum, idrtmpl, idrtlen, tmpfld, npt, ibmap, bmp, ierr)
@@ -847,6 +850,7 @@ contains
    integer :: lunout, ierr
    integer :: fortime, dij, npt
    CHARACTER(len=1),allocatable,dimension(:) :: cgrib
+   real(4) :: tmpfld(size(field,1), size(field,2))
 
    ! GRIB2 metadata arrays
    integer :: listsec0(2), listsec1(13)
@@ -1029,11 +1033,9 @@ contains
      ibmap=255     ! Bitmap indicator ( see Code Table 6.0 ) -255 no bitmap
      bmp=.true.
 
-     if (gcf(n)%var_name .eq. 'WTMP') then
+     if (trim(gcf(n)%name_gb2) .eq. 'WTMP') then
         where ( field(:,lyr,n) .ne. vfill ) field(:,lyr,n) = field(:,lyr,n) + 273.15
      endif
-
-!     where ( field(:,lyr,n) .eq. vfill )  bmp(:)= .false.
 
      ! Assign Template 5
 
@@ -1052,9 +1054,12 @@ contains
 
      idrtlen=size(idrtmpl)
 
+     tmpfld=0
+     tmpfld =field(:,lyr,n)
+
 
      call addfield(cgrib, max_bytes, ipdtnum, jpdt, ipdtlen, coordlist, numcoord, &
-     idrtnum, idrtmpl, idrtlen, field(:,lyr,n), npt, ibmap, bmp, ierr)
+     idrtnum, idrtmpl, idrtlen, tmpfld, npt, ibmap, bmp, ierr)
      if (ierr /=- 0) then
          write(0, *) 'Error adding field to GRIB2 message', ierr
          return
